@@ -11,7 +11,7 @@ namespace DungeonRewind.Player {
         private const float groundDeceleration = 60.0f;
         private const float crouchAcceleration = 60.0f;
         private const float crouchDeceleration = 40.0f;
-        private const float airAcceleration = 50.0f;
+        private const float airAcceleration = 45.0f;
         private const float airDeceleration = 15.0f;
         private const float speedTransitionSpeed = 8.0f;
         private const float speedTransitionTime = 2.0f;
@@ -21,6 +21,15 @@ namespace DungeonRewind.Player {
         private const float crouchUpSpeed = 4.1f;
         private const float airCrouchDownSpeed = 6.1f;
         private const float airCrouchUpSpeed = 12.0f;
+
+        private const float slideHeightScale = 0.5f;
+        private const float slideDuration = 0.8f;
+        private const float slideBufferTime = 0.09f;
+        private const float slideMinZeroTime = 0.3f;
+        private const float slideDownSpeed = 8.0f;
+        private const float slideUpSpeed = 6.0f;
+        private const float airSlideDownSpeed = 10.0f;
+        private const float airSlideUpSpeed = 14.0f;
 
         private const float gravity = -16.0f;
         private const float coyoteGravity = -12.0f;
@@ -63,6 +72,7 @@ namespace DungeonRewind.Player {
         private bool isJumpHeld;
         private bool jumpPressedThisFrame;
         private bool jumpReleasedThisFrame;
+        private bool crouchPressedThisFrame;
 
         private bool isGrounded;
         private float crouchProgression;
@@ -72,6 +82,11 @@ namespace DungeonRewind.Player {
         private float lastJumpPressedTime = 99f;
         private float lastJumpTime = 99f;
         private float lastJumpApexTime = 99f;
+        private float lastCrouchPressedTime = 99f;
+        private bool isSliding;
+        private float slideProgression;
+        private float slideTimer;
+        private float timeSinceSlideZero = 99f;
         private bool isJumping;
         private bool isJumpSustainReleased;
         private float currentJumpVelocitySustain;
@@ -105,6 +120,7 @@ namespace DungeonRewind.Player {
             Vector3 inputDirection = (transform.right * moveInput.x + transform.forward * moveInput.y).normalized;
 
             UpdateTimers(deltaTime);
+            ApplySlide(deltaTime, inputDirection, hasMoveInput);
             ApplyCrouch(deltaTime);
             ApplyVerticalMovement(deltaTime);
             ApplyHorizontalMovement(deltaTime, inputDirection, hasMoveInput);
@@ -189,6 +205,36 @@ namespace DungeonRewind.Player {
             } else {
                 lastJumpPressedTime += deltaTime;
             }
+
+            if (crouchPressedThisFrame) {
+                lastCrouchPressedTime = 0f;
+            } else {
+                lastCrouchPressedTime += deltaTime;
+            }
+        }
+
+        private void ApplySlide(float deltaTime, Vector3 inputDirection, bool hasMoveInput) {
+            if (isSliding) {
+                slideTimer += deltaTime;
+
+                if (slideTimer >= slideDuration || !isCrouchPressed) {
+                    isSliding = false;
+                }
+            } else {
+                bool crouchTriggerBuffered = isGrounded && lastCrouchPressedTime <= slideBufferTime;
+                bool velocityAlignedWithInput = hasMoveInput && Vector3.Dot(inputDirection, horizontalVelocity) > 0f;
+                bool canStartSlide = crouchTriggerBuffered && velocityAlignedWithInput && timeSinceSlideZero >= slideMinZeroTime;
+
+                if (canStartSlide) {
+                    isSliding = true;
+                    slideTimer = 0f;
+                }
+            }
+
+            float progressionRate = isSliding ? (isGrounded ? slideDownSpeed : airSlideDownSpeed) : -(isGrounded ? slideUpSpeed : airSlideUpSpeed);
+            slideProgression = Mathf.Clamp01(slideProgression + progressionRate * deltaTime);
+
+            timeSinceSlideZero = slideProgression <= 0f ? timeSinceSlideZero + deltaTime : 0f;
         }
 
         private void ApplyCrouch(float deltaTime) {
@@ -196,7 +242,8 @@ namespace DungeonRewind.Player {
 
             crouchProgression = Mathf.Clamp01(crouchProgression + progressionRate * deltaTime);
 
-            float heightScale = Mathf.Lerp(1f, crouchHeightScale, crouchProgression);
+            float crouchHeight = Mathf.Lerp(1f, crouchHeightScale, crouchProgression);
+            float heightScale = Mathf.Lerp(crouchHeight, slideHeightScale, slideProgression);
             float previousGroundCheckHeight = groundCheck.position.y;
 
             Vector3 scale = playerScale.localScale;
@@ -278,6 +325,7 @@ namespace DungeonRewind.Player {
         private void ConsumeFrameInputFlags() {
             jumpPressedThisFrame = false;
             jumpReleasedThisFrame = false;
+            crouchPressedThisFrame = false;
         }
 
         public void OnMove(InputValue value) {
@@ -303,7 +351,12 @@ namespace DungeonRewind.Player {
         }
 
         public void OnCrouch(InputValue value) {
+            bool wasCrouchPressed = isCrouchPressed;
             isCrouchPressed = value.isPressed;
+
+            if (isCrouchPressed && !wasCrouchPressed) {
+                crouchPressedThisFrame = true;
+            }
         }
     }
 }
