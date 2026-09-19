@@ -13,7 +13,7 @@ namespace DungeonRewind.Player {
         private const float crouchDeceleration = 55f;
         private const float airAcceleration = 30f;
         private const float jumpControlAcceleration = 60f;
-        private const float jumpControlWindowDuration = 0.25f;
+        private const float jumpControlWindowDuration = 0.2f;
         private const float airSteerRate = 60f;
         private const float jumpControlSteerRate = 260f;
         private const float airDeceleration = 8f;
@@ -41,7 +41,7 @@ namespace DungeonRewind.Player {
         private const float jumpVelocity = 6.0f;
         private const float jumpVelocitySustain = 4.5f;
         private const float crouchJumpVelocity = 4.0f;
-        private const float crouchJumpVelocitySustain = 4.2f;
+        private const float crouchJumpVelocitySustain = 3.0f;
         private const float jumpCooldownTime = 0.04f;
         private const float jumpCoyoteTime = 0.09f;
         private const float jumpBufferTime = 0.09f;
