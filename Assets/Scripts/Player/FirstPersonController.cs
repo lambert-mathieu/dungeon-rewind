@@ -2,7 +2,7 @@ using UnityEngine;
 using UnityEngine.InputSystem;
 
 namespace DungeonRewind.Player {
-    [RequireComponent(typeof(CharacterController))]
+    [RequireComponent(typeof(Rigidbody))]
     public class FirstPersonController : MonoBehaviour {
         private const float groundSpeed = 7.4f;
         private const float sprintSpeed = 10.0f;
@@ -21,8 +21,6 @@ namespace DungeonRewind.Player {
         private const float crouchUpSpeed = 4.1f;
         private const float airCrouchDownSpeed = 6.1f;
         private const float airCrouchUpSpeed = 12.0f;
-        private const float standingHeight = 2.0f;
-        private const float crouchingHeight = standingHeight * crouchHeightScale;
 
         private const float gravity = -16.0f;
         private const float coyoteGravity = -12.0f;
@@ -43,9 +41,16 @@ namespace DungeonRewind.Player {
         private const float minPitch = -87.0f;
         private const float maxPitch = 87.0f;
 
-        [SerializeField] private Transform cameraRoot;
+        private const float playerRadius = 0.45f;
+        private const float groundCheckRadius = playerRadius * 0.9f;
+        private const float groundCheckDistance = groundCheckRadius + 0.15f;
+        private const float slopeLimit = 45.0f;
 
-        private CharacterController characterController;
+        [SerializeField] private Transform cameraRoot;
+        [SerializeField] private Transform playerScale;
+
+        private Rigidbody rb;
+        private LayerMask groundCheckMask;
         private Vector2 moveInput;
         private Vector2 lookInput;
         private Vector3 horizontalVelocity;
@@ -71,9 +76,15 @@ namespace DungeonRewind.Player {
         private float currentJumpVelocitySustain;
 
         private void Awake() {
-            characterController = GetComponent<CharacterController>();
-            characterController.height = standingHeight;
-            characterController.center = new Vector3(0f, standingHeight / 2f, 0f);
+            rb = GetComponent<Rigidbody>();
+            rb.freezeRotation = true;
+            rb.interpolation = RigidbodyInterpolation.Interpolate;
+            rb.collisionDetectionMode = CollisionDetectionMode.ContinuousDynamic;
+            rb.useGravity = false;
+            groundCheckMask = ~(1 << gameObject.layer);
+
+            playerScale.localScale = Vector3.one;
+
             currentSpeed = groundSpeed;
         }
 
@@ -83,17 +94,20 @@ namespace DungeonRewind.Player {
         }
 
         private void Update() {
-            float deltaTime = Time.deltaTime;
+            HandleCursorToggle();
+            ApplyLook();
+        }
+
+        private void FixedUpdate() {
+            float deltaTime = Time.fixedDeltaTime;
             bool hasMoveInput = moveInput.sqrMagnitude > 0.0001f;
             Vector3 inputDirection = (transform.right * moveInput.x + transform.forward * moveInput.y).normalized;
 
-            HandleCursorToggle();
-            ApplyLook();
             UpdateTimers(deltaTime);
             ApplyCrouch(deltaTime);
             ApplyVerticalMovement(deltaTime);
             ApplyHorizontalMovement(deltaTime, inputDirection, hasMoveInput);
-            ApplyMotion(deltaTime);
+            ApplyMotion();
             ConsumeFrameInputFlags();
         }
 
@@ -119,8 +133,15 @@ namespace DungeonRewind.Player {
             cameraRoot.localRotation = Quaternion.Euler(pitch, 0f, 0f);
         }
 
+        private bool GroundCheck(out Vector3 groundNormal) {
+            Vector3 origin = transform.position + Vector3.up * groundCheckRadius;
+            bool didHit = Physics.SphereCast(origin, groundCheckRadius, Vector3.down, out RaycastHit hit, groundCheckDistance, groundCheckMask, QueryTriggerInteraction.Ignore);
+            groundNormal = didHit ? hit.normal : Vector3.up;
+            return didHit && Vector3.Angle(hit.normal, Vector3.up) <= slopeLimit;
+        }
+
         private void UpdateTimers(float deltaTime) {
-            isGrounded = characterController.isGrounded;
+            isGrounded = GroundCheck(out _);
 
             lastJumpTime += deltaTime;
 
@@ -146,20 +167,14 @@ namespace DungeonRewind.Player {
         }
 
         private void ApplyCrouch(float deltaTime) {
-            float previousCrouchProgression = crouchProgression;
-
             float progressionRate = isCrouchPressed ? (isGrounded ? crouchDownSpeed : airCrouchDownSpeed) : -(isGrounded ? crouchUpSpeed : airCrouchUpSpeed);
 
             crouchProgression = Mathf.Clamp01(crouchProgression + progressionRate * deltaTime);
 
-            float height = Mathf.Lerp(standingHeight, crouchingHeight, crouchProgression);
-            characterController.height = height;
-            characterController.center = new Vector3(0f, height / 2f, 0f);
-
-            if (isGrounded) {
-                float heightDifference = standingHeight - crouchingHeight;
-                transform.position -= new Vector3(0f, heightDifference * (crouchProgression - previousCrouchProgression), 0f);
-            }
+            float heightScale = Mathf.Lerp(1f, crouchHeightScale, crouchProgression);
+            Vector3 scale = playerScale.localScale;
+            scale.y = heightScale;
+            playerScale.localScale = scale;
         }
 
         private void ApplyVerticalMovement(float deltaTime) {
@@ -225,9 +240,8 @@ namespace DungeonRewind.Player {
             horizontalVelocity = Vector3.MoveTowards(horizontalVelocity, targetVelocity, acceleration * deltaTime);
         }
 
-        private void ApplyMotion(float deltaTime) {
-            Vector3 motion = new Vector3(horizontalVelocity.x, verticalVelocity, horizontalVelocity.z);
-            characterController.Move(motion * deltaTime);
+        private void ApplyMotion() {
+            rb.linearVelocity = new Vector3(horizontalVelocity.x, verticalVelocity, horizontalVelocity.z);
         }
 
         private void ConsumeFrameInputFlags() {
