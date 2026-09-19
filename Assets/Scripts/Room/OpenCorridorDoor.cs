@@ -2,36 +2,30 @@ using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.SceneManagement;
 
-public class OpenDoor : MonoBehaviour
+public class OpenCorridorDoor : MonoBehaviour
 {
-    public GameObject door;
+    public GameObject entranceDoor = null;
+    public GameObject exitDoor = null;
 
     [SerializeField] private PlayerData playerData;
     [SerializeField] private DungeonData dungeonData;
     [SerializeField] private Transform currentExit;
 
     private float minDistance = 5f;
-    private bool isLoadingCorridor = false;
+    private bool isLoadingRoom = false;
 
-    public async void LoadCorridor()
+    public async void LoadNextRoom(string sceneName)
     {
-        if (isLoadingCorridor)
+        if (isLoadingRoom)
             return;
 
-        isLoadingCorridor = true;
+        isLoadingRoom = true;
 
-        string sceneName = "Corridor";
-
-        // ------------------------------------
-        // 1. Unload previous corridor
-        // ------------------------------------
-
-        if (dungeonData.HasCorridor)
+        // Unload the previous ROOM first
+        if (dungeonData.HasCurrentRoom)
         {
             AsyncOperation unloadOperation =
-                SceneManager.UnloadSceneAsync(
-                    dungeonData.currentCorridorScene
-                );
+                SceneManager.UnloadSceneAsync(dungeonData.currentRoomScene);
 
             if (unloadOperation != null)
             {
@@ -41,13 +35,10 @@ public class OpenDoor : MonoBehaviour
                 }
             }
 
-            dungeonData.ClearCorridor();
+            dungeonData.ClearCurrentRoom();
         }
 
-        // ------------------------------------
-        // 2. Load new corridor
-        // ------------------------------------
-
+        // Load the next room
         AsyncOperation loadOperation =
             SceneManager.LoadSceneAsync(
                 sceneName,
@@ -59,20 +50,16 @@ public class OpenDoor : MonoBehaviour
             await System.Threading.Tasks.Task.Yield();
         }
 
-        // Because the old corridor was completely
-        // unloaded, only one Corridor exists now.
-        Scene newScene =
-            SceneManager.GetSceneByName(sceneName);
+        Scene newScene = SceneManager.GetSceneByName(sceneName);
 
         if (!newScene.IsValid() || !newScene.isLoaded)
         {
-            Debug.LogError("Failed to load " + sceneName);
-            isLoadingCorridor = false;
+            Debug.LogError("Failed to load scene " + sceneName);
+            isLoadingRoom = false;
             return;
         }
 
-        GameObject[] roots =
-            newScene.GetRootGameObjects();
+        GameObject[] roots = newScene.GetRootGameObjects();
 
         Transform entrance = null;
         Transform newExit = null;
@@ -94,67 +81,58 @@ public class OpenDoor : MonoBehaviour
 
         if (entrance == null)
         {
-            Debug.LogError("No Entrance found in " + sceneName);
-            isLoadingCorridor = false;
+            Debug.LogError("No Entrance found in scene " + sceneName);
+            isLoadingRoom = false;
             return;
         }
 
         if (newExit == null)
         {
-            Debug.LogError("No Exit found in " + sceneName);
-            isLoadingCorridor = false;
+            Debug.LogError("No Exit found in scene " + sceneName);
+            isLoadingRoom = false;
             return;
         }
 
         if (currentExit == null)
         {
             Debug.LogError("Current Exit is null");
-            isLoadingCorridor = false;
+            isLoadingRoom = false;
             return;
         }
 
-        // ------------------------------------
-        // 3. Align rotation
-        // ------------------------------------
-
-        Quaternion desiredEntranceRotation =
+        // Rotate the new room so its entrance faces the corridor exit
+        Quaternion targetEntranceRotation =
             currentExit.rotation *
             Quaternion.Euler(0f, 180f, 0f);
 
-        Quaternion rotationDifference =
-            desiredEntranceRotation *
+        Quaternion rotationOffset =
+            targetEntranceRotation *
             Quaternion.Inverse(entrance.rotation);
 
         foreach (GameObject root in roots)
         {
             root.transform.rotation =
-                rotationDifference *
-                root.transform.rotation;
+                rotationOffset * root.transform.rotation;
         }
 
-        // ------------------------------------
-        // 4. Align position AFTER rotation
-        // ------------------------------------
-
+        // Move AFTER rotating
         Vector3 offset =
-            currentExit.position -
-            entrance.position;
+            currentExit.position - entrance.position;
 
         foreach (GameObject root in roots)
         {
             root.transform.position += offset;
         }
 
-        // ------------------------------------
-        // 5. Remember this corridor globally
-        // ------------------------------------
+        currentExit = newExit;
 
-        dungeonData.SetCorridor(newScene);
+        // Remember this room so the next corridor can unload it
+        dungeonData.SetCurrentRoom(newScene);
 
-        isLoadingCorridor = false;
+        isLoadingRoom = false;
     }
 
-    private void Update()
+    void Update()
     {
         if (playerData.playerTransform == null)
             return;
@@ -162,12 +140,12 @@ public class OpenDoor : MonoBehaviour
         float distancePlayerDoor =
             Vector3.Distance(
                 playerData.playerTransform.position,
-                door.transform.position
+                exitDoor.transform.position
             );
 
         Debug.DrawLine(
             playerData.playerTransform.position,
-            door.transform.position
+            exitDoor.transform.position
         );
 
         if (
@@ -175,10 +153,13 @@ public class OpenDoor : MonoBehaviour
             distancePlayerDoor <= minDistance
         )
         {
-            LoadCorridor();
+            LoadNextRoom("EnemyRoom");
 
-            door.transform.localPosition =
-                new Vector3(0, 6, 0);
+            exitDoor.transform.localPosition =
+                new Vector3(-7.65f, 6f, 0);
+
+            entranceDoor.transform.localPosition =
+                new Vector3(7.39f, 2.54f, 0);
         }
     }
 }

@@ -8,6 +8,15 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/Scenes/SampleScene.unity
     guid: 99c9720ab356a0642a771bea13969a05
+  - enabled: 1
+    path: Assets/Scenes/DungeonGenerationScene.unity
+    guid: c2f2ea19324c81d4cad9ef2f779b03e2
+  - enabled: 1
+    path: Assets/Scenes/EnemyRoom.unity
+    guid: b8b670e12399b9f47aeca3e322e812c9
+  - enabled: 1
+    path: Assets/Scenes/Corridor.unity
+    guid: 4de1d2e7810be97409bfcd5aeca748a7
   m_configObjects:
     com.unity.input.settings.actions: {fileID: -944628639613478452, guid: 052faaac586de48259a63d0c4782560b, type: 3}
   m_UseUCBPForAssetBundles: 0
