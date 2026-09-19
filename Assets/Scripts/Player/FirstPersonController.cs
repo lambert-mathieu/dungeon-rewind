@@ -51,8 +51,6 @@ namespace DungeonRewind.Player {
         private const float jumpApexFallBonusTime = 0.25f;
 
         private const float mouseSensitivity = 0.12f;
-        private const float minPitch = -88.0f;
-        private const float maxPitch = 88.0f;
 
         private const float groundCheckRadius = 0.49f;
         private const float groundCheckSkin = 0.03f;
@@ -69,7 +67,6 @@ namespace DungeonRewind.Player {
         private Vector2 lookInput;
         private Vector3 horizontalVelocity;
         private float verticalVelocity;
-        private float pitch;
 
         private bool isCrouchPressed;
         private bool isJumpHeld;
@@ -110,13 +107,7 @@ namespace DungeonRewind.Player {
             currentSpeed = groundSpeed;
         }
 
-        private void Start() {
-            Cursor.lockState = CursorLockMode.Locked;
-            Cursor.visible = false;
-        }
-
         private void Update() {
-            HandleCursorToggle();
             ApplyLook();
         }
 
@@ -134,26 +125,13 @@ namespace DungeonRewind.Player {
             ConsumeFrameInputFlags();
         }
 
-        private void HandleCursorToggle() {
-            if (Keyboard.current == null || !Keyboard.current.escapeKey.wasPressedThisFrame) {
-                return;
-            }
-
-            bool isCurrentlyLocked = Cursor.lockState == CursorLockMode.Locked;
-            Cursor.lockState = isCurrentlyLocked ? CursorLockMode.None : CursorLockMode.Locked;
-            Cursor.visible = isCurrentlyLocked;
-        }
-
         private void ApplyLook() {
             if (Cursor.lockState != CursorLockMode.Locked) {
                 return;
             }
 
             float yawDelta = lookInput.x * mouseSensitivity;
-            pitch = Mathf.Clamp(pitch - lookInput.y * mouseSensitivity, minPitch, maxPitch);
-
             transform.Rotate(Vector3.up * yawDelta);
-            cameraRoot.localRotation = Quaternion.Euler(pitch, 0f, 0f);
         }
 
         private bool GroundCheck(out Vector3 groundNormal) {
@@ -365,6 +343,8 @@ namespace DungeonRewind.Player {
             crouchPressedThisFrame = false;
             slideDurationEndedThisFrame = false;
         }
+
+        public Vector3 HorizontalVelocity => horizontalVelocity;
 
         public void OnMove(InputValue value) {
             moveInput = Vector2.ClampMagnitude(value.Get<Vector2>(), 1f);
