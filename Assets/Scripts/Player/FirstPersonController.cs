@@ -6,12 +6,12 @@ namespace DungeonRewind.Player {
     public class FirstPersonController : MonoBehaviour {
         private const float groundSpeed = 10.0f;
         private const float crouchSpeed = 7.0f;
-        private const float groundAcceleration = 135.0f;
-        private const float groundDeceleration = 50.0f;
-        private const float crouchAcceleration = 80.0f;
-        private const float crouchDeceleration = 40.0f;
+        private const float groundAcceleration = 180.0f;
+        private const float groundDeceleration = 90.0f;
+        private const float crouchAcceleration = 90.0f;
+        private const float crouchDeceleration = 45.0f;
         private const float airAcceleration = 50.0f;
-        private const float airDeceleration = 20.0f;
+        private const float airDeceleration = 25.0f;
         private const float speedTransitionSpeed = 10.0f;
         private const float speedTransitionTime = 1.0f;
 
@@ -30,8 +30,8 @@ namespace DungeonRewind.Player {
         private const float airSlideDownSpeed = 12.0f;
         private const float airSlideUpSpeed = 14.0f;
         private const float slideSpeed = 12.0f;
-        private const float slideAcceleration = 125.0f;
-        private const float slideDeceleration = 30.0f;
+        private const float slideAcceleration = 90.0f;
+        private const float slideDeceleration = 45.0f;
 
         private const float gravity = -16.0f;
         private const float coyoteGravity = -10.0f;
@@ -40,7 +40,7 @@ namespace DungeonRewind.Player {
         private const float jumpVelocitySustain = 3.6f;
         private const float crouchJumpVelocity = 5.8f;
         private const float crouchJumpVelocitySustain = 3.6f;
-        private const float slideJumpVelocity = 6.5f;
+        private const float slideJumpVelocity = 6.3f;
         private const float slideJumpVelocitySustain = 3.6f;
         private const float jumpCooldownTime = 0.02f;
         private const float jumpCoyoteTime = 0.1f;
