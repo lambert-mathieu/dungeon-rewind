@@ -4,61 +4,63 @@ using UnityEngine.InputSystem;
 namespace DungeonRewind.Player {
     [RequireComponent(typeof(CharacterController))]
     public class FirstPersonController : MonoBehaviour {
-        private const float groundSpeed = 6f;
-        private const float sprintSpeed = 8.5f;
-        private const float crouchSpeed = 3f;
+        private const float groundSpeed = 5.0f;
+        private const float sprintSpeed = 7.0f;
+        private const float crouchSpeed = 3.0f;
         private const float groundAcceleration = 140f;
         private const float groundDeceleration = 120f;
         private const float crouchAcceleration = 70f;
         private const float crouchDeceleration = 55f;
-        private const float airAcceleration = 18f;
+        private const float airAcceleration = 30f;
         private const float jumpControlAcceleration = 60f;
         private const float jumpControlWindowDuration = 0.25f;
-        private const float airSteerRate = 50f;
+        private const float airSteerRate = 60f;
         private const float jumpControlSteerRate = 260f;
-        private const float airDeceleration = 7f;
+        private const float airDeceleration = 8f;
 
         private const float slideMinSpeed = 4f;
-        private const float slideBoostAmount = 4f;
-        private const float slideSoftCap = 13f;
-        private const float slideFriction = 13f;
-        private const float slideCrouchBufferTime = 0.2f;
+        private const float slideBoostAmount = 6f;
+        private const float slideSoftCap = 16f;
+        private const float slideFriction = 9f;
+        private const float slideSteerRate = 45f;
+        private const float slideCrouchBufferTime = 0.12f;
 
-        private const float crouchHeightScale = 0.7f;
-        private const float crouchDownSpeed = 10f;
-        private const float slideCrouchDownSpeed = 13f;
-        private const float crouchUpSpeed = 9f;
-        private const float airCrouchDownSpeed = 14f;
-        private const float airCrouchUpSpeed = 16f;
-        private const float standingHeight = 1.8f;
+        private const float crouchHeightScale = 0.65f;
+        private const float crouchDownSpeed = 6f;
+        private const float slideCrouchDownSpeed = 7f;
+        private const float crouchUpSpeed = 5.5f;
+        private const float airCrouchDownSpeed = 12f;
+        private const float airCrouchUpSpeed = 14f;
+        private const float cameraCrouchEaseSpeed = 11f;
+        private const float standingHeight = 2f;
         private const float crouchingHeight = standingHeight * crouchHeightScale;
 
         private const float gravity = -16f;
         private const float coyoteGravity = -12f;
         private const float maxFallSpeed = 34f;
-        private const float jumpVelocity = 6.1f;
-        private const float jumpVelocitySustain = 5.5f;
-        private const float crouchJumpVelocity = 4.1f;
-        private const float crouchJumpVelocitySustain = 1.5f;
+        private const float jumpVelocity = 6.0f;
+        private const float jumpVelocitySustain = 4.5f;
+        private const float crouchJumpVelocity = 4.0f;
+        private const float crouchJumpVelocitySustain = 4.2f;
         private const float jumpCooldownTime = 0.04f;
         private const float jumpCoyoteTime = 0.09f;
         private const float jumpBufferTime = 0.09f;
-        private const float jumpMinHoldTime = 0f;
-        private const float jumpMaxHoldTime = 0.2f;
+        private const float jumpMinHoldTime = 0.01f;
+        private const float jumpMaxHoldTime = 0.3f;
         private const float jumpApexFallBonusGravity = -11.5f;
         private const float jumpApexFallBonusTime = 0.25f;
 
         private const float mouseSensitivity = 0.12f;
-        private const float minPitch = -85f;
-        private const float maxPitch = 85f;
+        private const float minPitch = -87f;
+        private const float maxPitch = 87f;
 
-        private const float headBobKickScale = 0.1f;
-        private const float headBobSpringStiffness = 180f;
-        private const float headBobSpringDamping = 26.8f;
-        private const float headBobMaxOffset = 0.5f;
+        private const float headBobKickScale = 0.22f;
+        private const float headBobSpringStiffness = 400f;
+        private const float headBobSpringDamping = 34f;
+        private const float headBobMaxOffset = 0.6f;
 
         private const float fovBoostAmount = 10f;
-        private const float fovChangeSpeed = 4f;
+        private const float fovChangeSpeed = 30f;
 
         [SerializeField] private Transform cameraRoot;
         [SerializeField] private Camera playerCamera;
@@ -74,6 +76,7 @@ namespace DungeonRewind.Player {
         private bool isSprinting;
         private bool isCrouchPressed;
         private bool crouchPressedThisFrame;
+        private bool crouchPoseSuppressed;
         private bool isJumpHeld;
         private bool jumpPressedThisFrame;
         private bool jumpReleasedThisFrame;
@@ -89,10 +92,11 @@ namespace DungeonRewind.Player {
         private float timeSinceJumpTriggered = 99f;
         private bool isJumping;
         private bool isJumpSustainReleased;
+        private bool jumpedFromSlide;
         private float currentJumpVelocitySustain;
 
         private Vector3 standingCameraLocalPosition;
-        private Vector3 crouchingCameraLocalPosition;
+        private float cameraCrouchOffsetY;
         private float headBobOffset;
         private float headBobVelocity;
         private float baseFov;
@@ -103,8 +107,6 @@ namespace DungeonRewind.Player {
             characterController.center = new Vector3(0f, standingHeight / 2f, 0f);
 
             standingCameraLocalPosition = cameraRoot.localPosition;
-            float heightDifference = standingHeight - crouchingHeight;
-            crouchingCameraLocalPosition = standingCameraLocalPosition - new Vector3(0f, heightDifference, 0f);
 
             baseFov = playerCamera.fieldOfView;
         }
@@ -193,8 +195,10 @@ namespace DungeonRewind.Player {
         }
 
         private void ApplyCrouch(float deltaTime) {
+            bool effectiveCrouchHeld = isCrouchPressed && !crouchPoseSuppressed;
+
             float downSpeed = isSliding ? slideCrouchDownSpeed : crouchDownSpeed;
-            float progressionRate = isCrouchPressed
+            float progressionRate = effectiveCrouchHeld
                 ? (isGrounded ? downSpeed : airCrouchDownSpeed)
                 : -(isGrounded ? crouchUpSpeed : airCrouchUpSpeed);
 
@@ -204,7 +208,10 @@ namespace DungeonRewind.Player {
             characterController.height = height;
             characterController.center = new Vector3(0f, height / 2f, 0f);
 
-            Vector3 crouchedCameraPosition = Vector3.Lerp(standingCameraLocalPosition, crouchingCameraLocalPosition, crouchProgression);
+            float targetCameraOffsetY = isGrounded ? -(standingHeight - height) : 0f;
+            cameraCrouchOffsetY = Mathf.MoveTowards(cameraCrouchOffsetY, targetCameraOffsetY, cameraCrouchEaseSpeed * deltaTime);
+
+            Vector3 crouchedCameraPosition = standingCameraLocalPosition + new Vector3(0f, cameraCrouchOffsetY, 0f);
             cameraRoot.localPosition = crouchedCameraPosition + new Vector3(0f, headBobOffset, 0f);
         }
 
@@ -244,10 +251,15 @@ namespace DungeonRewind.Player {
                     verticalVelocity = Mathf.Lerp(jumpVelocity, crouchJumpVelocity, crouchProgression);
                     currentJumpVelocitySustain = Mathf.Lerp(jumpVelocitySustain, crouchJumpVelocitySustain, crouchProgression);
 
+                    if (isCrouchPressed) {
+                        crouchPoseSuppressed = true;
+                    }
+
                     lastJumpPressedTime = 99f;
                     timeSinceGrounded = 99f;
                     lastJumpTime = 0f;
                     timeSinceJumpTriggered = 0f;
+                    jumpedFromSlide = isSliding;
                     isJumping = true;
                     isJumpSustainReleased = jumpReleasedThisFrame || !isJumpHeld;
                 }
@@ -269,7 +281,7 @@ namespace DungeonRewind.Player {
             }
 
             if (isSliding) {
-                ApplySlideMovement(deltaTime);
+                ApplySlideMovement(deltaTime, inputDirection, hasMoveInput);
             } else if (isGrounded) {
                 ApplyGroundMovement(deltaTime, inputDirection, hasMoveInput);
             } else {
@@ -289,7 +301,12 @@ namespace DungeonRewind.Player {
             horizontalVelocity = slideDirection * (currentSpeed + boost);
         }
 
-        private void ApplySlideMovement(float deltaTime) {
+        private void ApplySlideMovement(float deltaTime, Vector3 inputDirection, bool hasMoveInput) {
+            if (hasMoveInput && horizontalVelocity.sqrMagnitude > 0.0001f) {
+                Vector3 steeredDirection = Vector3.RotateTowards(horizontalVelocity.normalized, inputDirection, slideSteerRate * Mathf.Deg2Rad * deltaTime, 0f);
+                horizontalVelocity = steeredDirection * horizontalVelocity.magnitude;
+            }
+
             float speed = Mathf.Max(0f, horizontalVelocity.magnitude - slideFriction * deltaTime);
             horizontalVelocity = speed > 0.0001f ? horizontalVelocity.normalized * speed : Vector3.zero;
             intendedSpeed = speed;
@@ -329,7 +346,7 @@ namespace DungeonRewind.Player {
 
             float wishSpeedCap = isSprinting ? sprintSpeed : groundSpeed;
             float diminishFactor = Mathf.Clamp01(1f - horizontalVelocity.magnitude / wishSpeedCap);
-            float baseAccel = inJumpControlWindow ? jumpControlAcceleration : airAcceleration;
+            float baseAccel = inJumpControlWindow && jumpedFromSlide ? jumpControlAcceleration : airAcceleration;
             float accel = baseAccel * diminishFactor;
 
             if (accel > 0f) {
@@ -346,8 +363,9 @@ namespace DungeonRewind.Player {
         }
 
         private void ApplyFov(float deltaTime) {
-            float speedFraction = Mathf.Clamp01(intendedSpeed / sprintSpeed);
-            float targetFov = baseFov + speedFraction * fovBoostAmount;
+            float speedFraction = Mathf.Clamp01(intendedSpeed / slideSoftCap);
+            float curvedFraction = speedFraction * speedFraction;
+            float targetFov = baseFov + curvedFraction * fovBoostAmount;
             playerCamera.fieldOfView = Mathf.MoveTowards(playerCamera.fieldOfView, targetFov, fovChangeSpeed * deltaTime);
         }
 
@@ -363,7 +381,7 @@ namespace DungeonRewind.Player {
         }
 
         public void OnMove(InputValue value) {
-            moveInput = value.Get<Vector2>();
+            moveInput = Vector2.ClampMagnitude(value.Get<Vector2>(), 1f);
         }
 
         public void OnLook(InputValue value) {
@@ -389,6 +407,7 @@ namespace DungeonRewind.Player {
 
             if (pressed && !isCrouchPressed) {
                 crouchPressedThisFrame = true;
+                crouchPoseSuppressed = false;
             }
 
             isCrouchPressed = pressed;
