@@ -25,5 +25,6 @@ Always use modern Unity approaches when writing or editing C# scripts in this pr
 - Value implementing features the correct way: clean code, scalable, well-structured, with minimal code duplication.
 - Use LF line endings (not CRLF), and 4 spaces for indentation where possible.
 - Use Kernighan & Ritchie (K&R) style: opening brace on the same line.
+- Always end files with a blank line at the end.
 - Always ask the user when unsure about a decision.
 - Unless explicitly asked by the user, never run git commands that can discard or commit changes, such as `commit`, `checkout`, `restore`, `reset`, `stash`, `revert`, etc.
