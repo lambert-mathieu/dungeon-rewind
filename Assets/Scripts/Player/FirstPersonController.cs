@@ -16,7 +16,7 @@ namespace DungeonRewind.Player {
         private const float speedTransitionSpeed = 8.0f;
         private const float speedTransitionTime = 2.0f;
 
-        private const float crouchHeightScale = 0.65f;
+        private const float crouchHeightScale = 0.7f;
         private const float crouchDownSpeed = 4.5f;
         private const float crouchUpSpeed = 4.1f;
         private const float airCrouchDownSpeed = 6.1f;
@@ -41,13 +41,14 @@ namespace DungeonRewind.Player {
         private const float minPitch = -87.0f;
         private const float maxPitch = 87.0f;
 
-        private const float playerRadius = 0.45f;
-        private const float groundCheckRadius = playerRadius * 0.9f;
-        private const float groundCheckDistance = groundCheckRadius + 0.15f;
+        private const float groundCheckRadius = 0.49f;
+        private const float groundCheckSkin = 0.1f;
+        private const int groundCheckRayCount = 20;
         private const float slopeLimit = 45.0f;
 
         [SerializeField] private Transform cameraRoot;
         [SerializeField] private Transform playerScale;
+        [SerializeField] private Transform groundCheck;
 
         private Rigidbody rb;
         private LayerMask groundCheckMask;
@@ -134,10 +135,34 @@ namespace DungeonRewind.Player {
         }
 
         private bool GroundCheck(out Vector3 groundNormal) {
-            Vector3 origin = transform.position + Vector3.up * groundCheckRadius;
-            bool didHit = Physics.SphereCast(origin, groundCheckRadius, Vector3.down, out RaycastHit hit, groundCheckDistance, groundCheckMask, QueryTriggerInteraction.Ignore);
-            groundNormal = didHit ? hit.normal : Vector3.up;
-            return didHit && Vector3.Angle(hit.normal, Vector3.up) <= slopeLimit;
+            groundNormal = Vector3.up;
+            bool grounded = false;
+            float bestAngle = slopeLimit;
+
+            for (int i = 0; i <= groundCheckRayCount; i++) {
+                Vector3 offset = Vector3.zero;
+                if (i < groundCheckRayCount) {
+                    float angle = i * Mathf.PI * 2f / groundCheckRayCount;
+                    offset = new Vector3(Mathf.Cos(angle), 0f, Mathf.Sin(angle)) * groundCheckRadius;
+                }
+
+                Vector3 origin = groundCheck.position + offset + Vector3.up * groundCheckSkin;
+
+                if (!Physics.Raycast(origin, Vector3.down, out RaycastHit hit, groundCheckSkin * 2f, groundCheckMask, QueryTriggerInteraction.Ignore)) {
+                    continue;
+                }
+
+                float angleFromUp = Vector3.Angle(hit.normal, Vector3.up);
+                if (angleFromUp > bestAngle) {
+                    continue;
+                }
+
+                grounded = true;
+                bestAngle = angleFromUp;
+                groundNormal = hit.normal;
+            }
+
+            return grounded;
         }
 
         private void UpdateTimers(float deltaTime) {
@@ -172,9 +197,15 @@ namespace DungeonRewind.Player {
             crouchProgression = Mathf.Clamp01(crouchProgression + progressionRate * deltaTime);
 
             float heightScale = Mathf.Lerp(1f, crouchHeightScale, crouchProgression);
+            float previousGroundCheckHeight = groundCheck.position.y;
+
             Vector3 scale = playerScale.localScale;
             scale.y = heightScale;
             playerScale.localScale = scale;
+
+            if (isGrounded) {
+                rb.position += Vector3.up * (previousGroundCheckHeight - groundCheck.position.y);
+            }
         }
 
         private void ApplyVerticalMovement(float deltaTime) {
