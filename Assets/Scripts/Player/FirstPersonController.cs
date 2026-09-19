@@ -4,59 +4,58 @@ using UnityEngine.InputSystem;
 namespace DungeonRewind.Player {
     [RequireComponent(typeof(Rigidbody))]
     public class FirstPersonController : MonoBehaviour {
-        private const float groundSpeed = 7.0f;
-        private const float sprintSpeed = 9.0f;
-        private const float crouchSpeed = 5.0f;
-        private const float groundAcceleration = 100.0f;
-        private const float groundDeceleration = 60.0f;
-        private const float crouchAcceleration = 60.0f;
+        private const float groundSpeed = 10.0f;
+        private const float crouchSpeed = 7.0f;
+        private const float groundAcceleration = 135.0f;
+        private const float groundDeceleration = 50.0f;
+        private const float crouchAcceleration = 80.0f;
         private const float crouchDeceleration = 40.0f;
-        private const float airAcceleration = 45.0f;
-        private const float airDeceleration = 15.0f;
-        private const float speedTransitionSpeed = 8.0f;
-        private const float speedTransitionTime = 2.0f;
+        private const float airAcceleration = 50.0f;
+        private const float airDeceleration = 20.0f;
+        private const float speedTransitionSpeed = 10.0f;
+        private const float speedTransitionTime = 1.0f;
 
-        private const float crouchHeightScale = 0.6f;
-        private const float crouchDownSpeed = 4.5f;
-        private const float crouchUpSpeed = 4.1f;
-        private const float airCrouchDownSpeed = 6.1f;
+        private const float crouchHeightScale = 0.75f;
+        private const float crouchDownSpeed = 5.8f;
+        private const float crouchUpSpeed = 4.8f;
+        private const float airCrouchDownSpeed = 7.5f;
         private const float airCrouchUpSpeed = 12.0f;
 
-        private const float slideHeightScale = 0.6f;
-        private const float slideDuration = 0.35f;
-        private const float slideBufferTime = 0.15f;
+        private const float slideHeightScale = 0.58f;
+        private const float slideDuration = 0.60f;
+        private const float slideBufferTime = 0.3f;
         private const float slideMinZeroTime = 0.3f;
-        private const float slideDownSpeed = 6.0f;
-        private const float slideUpSpeed = 5.0f;
-        private const float airSlideDownSpeed = 10.0f;
+        private const float slideDownSpeed = 7.5f;
+        private const float slideUpSpeed = 6.5f;
+        private const float airSlideDownSpeed = 12.0f;
         private const float airSlideUpSpeed = 14.0f;
-        private const float slideSpeed = 11.0f;
-        private const float slideAcceleration = 50.0f;
-        private const float slideDeceleration = 10.0f;
+        private const float slideSpeed = 12.0f;
+        private const float slideAcceleration = 125.0f;
+        private const float slideDeceleration = 30.0f;
 
         private const float gravity = -16.0f;
-        private const float coyoteGravity = -12.0f;
-        private const float maxFallSpeed = 34.0f;
-        private const float jumpVelocity = 6.1f;
-        private const float jumpVelocitySustain = 3.5f;
-        private const float crouchJumpVelocity = 5.1f;
-        private const float crouchJumpVelocitySustain = 3.5f;
-        private const float slideJumpVelocity = 6.1f;
-        private const float slideJumpVelocitySustain = 3.5f;
-        private const float jumpCooldownTime = 0.04f;
+        private const float coyoteGravity = -10.0f;
+        private const float maxFallSpeed = 35.0f;
+        private const float jumpVelocity = 6.3f;
+        private const float jumpVelocitySustain = 3.6f;
+        private const float crouchJumpVelocity = 5.8f;
+        private const float crouchJumpVelocitySustain = 3.6f;
+        private const float slideJumpVelocity = 6.5f;
+        private const float slideJumpVelocitySustain = 3.6f;
+        private const float jumpCooldownTime = 0.02f;
         private const float jumpCoyoteTime = 0.1f;
         private const float jumpBufferTime = 0.15f;
         private const float jumpMinHoldTime = 0.0f;
         private const float jumpMaxHoldTime = 0.2f;
-        private const float jumpApexFallBonusGravity = -11.5f;
+        private const float jumpApexFallBonusGravity = -13.0f;
         private const float jumpApexFallBonusTime = 0.25f;
 
         private const float mouseSensitivity = 0.12f;
-        private const float minPitch = -87.0f;
-        private const float maxPitch = 87.0f;
+        private const float minPitch = -88.0f;
+        private const float maxPitch = 88.0f;
 
         private const float groundCheckRadius = 0.49f;
-        private const float groundCheckSkin = 0.1f;
+        private const float groundCheckSkin = 0.03f;
         private const int groundCheckRayCount = 20;
         private const float slopeLimit = 45.0f;
 
@@ -72,7 +71,6 @@ namespace DungeonRewind.Player {
         private float verticalVelocity;
         private float pitch;
 
-        private bool isSprinting;
         private bool isCrouchPressed;
         private bool isJumpHeld;
         private bool jumpPressedThisFrame;
@@ -236,7 +234,7 @@ namespace DungeonRewind.Player {
             } else {
                 bool crouchTriggerBuffered = isGrounded && lastCrouchPressedTime <= slideBufferTime;
                 bool velocityAlignedWithInput = hasMoveInput && Vector3.Dot(inputDirection, horizontalVelocity) > 0f;
-                bool canStartSlide = isSprinting && crouchTriggerBuffered && velocityAlignedWithInput && timeSinceSlideZero >= slideMinZeroTime;
+                bool canStartSlide = crouchTriggerBuffered && velocityAlignedWithInput && timeSinceSlideZero >= slideMinZeroTime;
 
                 if (canStartSlide) {
                     isSliding = true;
@@ -330,8 +328,7 @@ namespace DungeonRewind.Player {
 
         private void ApplyHorizontalMovement(float deltaTime, Vector3 inputDirection, bool hasMoveInput) {
             if (isGrounded) {
-                float baseSpeed = isSprinting ? sprintSpeed : groundSpeed;
-                float crouchedSpeed = Mathf.Lerp(baseSpeed, crouchSpeed, crouchProgression);
+                float crouchedSpeed = Mathf.Lerp(groundSpeed, crouchSpeed, crouchProgression);
                 currentSpeed = Mathf.Lerp(crouchedSpeed, slideSpeed, slideProgression);
             } else if (timeSinceGrounded >= speedTransitionTime && currentSpeed < groundSpeed) {
                 currentSpeed = Mathf.Min(currentSpeed + speedTransitionSpeed * deltaTime, groundSpeed);
@@ -374,10 +371,6 @@ namespace DungeonRewind.Player {
             } else {
                 jumpReleasedThisFrame = true;
             }
-        }
-
-        public void OnSprint(InputValue value) {
-            isSprinting = value.isPressed;
         }
 
         public void OnCrouch(InputValue value) {
