@@ -222,19 +222,21 @@ namespace DungeonRewind.Player {
         }
 
         private void ApplySlide(float deltaTime, Vector3 inputDirection, bool hasMoveInput) {
+            bool isForwardPressed = moveInput.y > 0f;
+
             if (isSliding) {
                 slideTimer += deltaTime;
 
                 if (slideTimer >= slideDuration) {
                     isSliding = false;
                     slideDurationEndedThisFrame = true;
-                } else if (!effectiveCrouchPressed) {
+                } else if (!effectiveCrouchPressed || !isForwardPressed) {
                     isSliding = false;
                 }
             } else {
                 bool crouchTriggerBuffered = isGrounded && lastCrouchPressedTime <= slideBufferTime;
                 bool velocityAlignedWithInput = hasMoveInput && Vector3.Dot(inputDirection, horizontalVelocity) > 0f;
-                bool canStartSlide = crouchTriggerBuffered && velocityAlignedWithInput && timeSinceSlideZero >= slideMinZeroTime;
+                bool canStartSlide = crouchTriggerBuffered && velocityAlignedWithInput && isForwardPressed && timeSinceSlideZero >= slideMinZeroTime;
 
                 if (canStartSlide) {
                     isSliding = true;
@@ -340,7 +342,16 @@ namespace DungeonRewind.Player {
 
             float acceleration = Mathf.Lerp(baseAcceleration, hasMoveInput ? slideAcceleration : slideDeceleration, slideProgression);
 
-            Vector3 targetVelocity = inputDirection * currentSpeed;
+            Vector3 targetDirection = inputDirection;
+            if (hasMoveInput) {
+                Vector3 cameraForward = cameraRoot.forward;
+                cameraForward.y = 0f;
+                if (cameraForward.sqrMagnitude > 0.0001f) {
+                    targetDirection = Vector3.Slerp(inputDirection, cameraForward.normalized, 0.5f * slideProgression);
+                }
+            }
+
+            Vector3 targetVelocity = targetDirection * currentSpeed;
             horizontalVelocity = Vector3.MoveTowards(horizontalVelocity, targetVelocity, acceleration * deltaTime);
         }
 
