@@ -792,7 +792,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   cameraRoot: {fileID: 500000021}
-  playerCamera: {fileID: 330585545}
 --- !u!114 &500000014
 MonoBehaviour:
   m_ObjectHideFlags: 0
