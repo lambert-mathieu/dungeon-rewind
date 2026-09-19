@@ -16,18 +16,30 @@ namespace DungeonRewind.Player {
         private const float directionFullBoostAngle = 40.0f;
         private const float directionZeroBoostAngle = 100.0f;
         private const float maxFieldOfViewBoost = 20.0f;
-        private const float fieldOfViewIncreaseSpeed = 10.0f;
-        private const float fieldOfViewDecreaseSpeed = 30.0f;
-        private const float minHandSwayAmplitude = 0.01f;
+        private const float fieldOfViewIncreaseSpeed = 5.0f;
+        private const float fieldOfViewDecreaseSpeed = 10.0f;
+
+        private const float handSwayReferenceLowSpeed = 0.0f;
+        private const float handSwayReferenceMidSpeed = 10.0f;
+        private const float handSwayReferenceHighSpeed = 12.0f;
+        private const float minHandSwayAmplitude = 0.05f;
+        private const float midHandSwayAmplitude = 0.15f;
         private const float maxHandSwayAmplitude = 0.05f;
-        private const float minHandSwayFrequency = 1.0f;
-        private const float maxHandSwayFrequency = 4.0f;
+        private const float minHandSwayFrequency = 0.3f;
+        private const float midHandSwayFrequency = 1.2f;
+        private const float maxHandSwayFrequency = 0.3f;
+        private const float swayMagnitudeIncreaseSpeed = 0.5f;
+        private const float swayMagnitudeDecreaseSpeed = 1.0f;
+        private const float swayFrequencyIncreaseSpeed = 1.0f;
+        private const float swayFrequencyDecreaseSpeed = 2.0f;
 
         private Vector2 lookInput;
         private float pitch;
         private float baseFieldOfView;
         private Vector3 armRightBaseLocalPosition;
         private float handSwayPhase;
+        private float currentHandSwayAmplitude;
+        private float currentHandSwayFrequency;
 
         private void Awake() {
             baseFieldOfView = armCamera.fieldOfView;
@@ -48,9 +60,11 @@ namespace DungeonRewind.Player {
                 return;
             }
 
-            float speedIntensity = CalculateSpeedIntensity();
-            UpdateDynamicFieldOfView(speedIntensity, deltaTime);
-            UpdateHandAnimation(speedIntensity, deltaTime);
+            Vector3 horizontalVelocity = firstPersonController.HorizontalVelocity;
+            float directionFactor = CalculateDirectionFactor(horizontalVelocity);
+
+            UpdateDynamicFieldOfView(CalculateFieldOfViewSpeedIntensity(horizontalVelocity, directionFactor), deltaTime);
+            UpdateHandAnimation(CalculateHandSwaySpeedIntensity(horizontalVelocity, directionFactor), deltaTime);
         }
 
         private void HandleCursorToggle() {
@@ -72,18 +86,33 @@ namespace DungeonRewind.Player {
             transform.localRotation = Quaternion.Euler(pitch, 0f, 0f);
         }
 
-        private float CalculateSpeedIntensity() {
-            Vector3 horizontalVelocity = firstPersonController.HorizontalVelocity;
-
+        private float CalculateDirectionFactor(Vector3 horizontalVelocity) {
             Vector3 cameraForward = transform.forward;
             cameraForward.y = 0f;
-            float directionFactor = 0f;
-            if (horizontalVelocity.sqrMagnitude > 0.0001f && cameraForward.sqrMagnitude > 0.0001f) {
-                float velocityAngle = Vector3.Angle(horizontalVelocity.normalized, cameraForward.normalized);
-                directionFactor = 1f - Mathf.InverseLerp(directionFullBoostAngle, directionZeroBoostAngle, velocityAngle);
+            if (horizontalVelocity.sqrMagnitude <= 0.0001f || cameraForward.sqrMagnitude <= 0.0001f) {
+                return 0f;
             }
 
+            float velocityAngle = Vector3.Angle(horizontalVelocity.normalized, cameraForward.normalized);
+            return 1f - Mathf.InverseLerp(directionFullBoostAngle, directionZeroBoostAngle, velocityAngle);
+        }
+
+        private float CalculateFieldOfViewSpeedIntensity(Vector3 horizontalVelocity, float directionFactor) {
             float speedRatio = Mathf.InverseLerp(referenceLowSpeed, referenceHighSpeed, horizontalVelocity.magnitude);
+            return speedRatio * directionFactor;
+        }
+
+        private static float InterpolateThreePoint(float low, float mid, float high, float t) {
+            return t <= 0.5f
+                ? Mathf.Lerp(low, mid, t / 0.5f)
+                : Mathf.Lerp(mid, high, (t - 0.5f) / 0.5f);
+        }
+
+        private float CalculateHandSwaySpeedIntensity(Vector3 horizontalVelocity, float directionFactor) {
+            float speed = horizontalVelocity.magnitude;
+            float speedRatio = speed <= handSwayReferenceMidSpeed
+                ? Mathf.InverseLerp(handSwayReferenceLowSpeed, handSwayReferenceMidSpeed, speed) * 0.5f
+                : 0.5f + Mathf.InverseLerp(handSwayReferenceMidSpeed, handSwayReferenceHighSpeed, speed) * 0.5f;
             return speedRatio * directionFactor;
         }
 
@@ -94,13 +123,19 @@ namespace DungeonRewind.Player {
         }
 
         private void UpdateHandAnimation(float speedIntensity, float deltaTime) {
-            float amplitude = Mathf.Lerp(minHandSwayAmplitude, maxHandSwayAmplitude, speedIntensity);
-            float frequency = Mathf.Lerp(minHandSwayFrequency, maxHandSwayFrequency, speedIntensity);
+            float targetAmplitude = InterpolateThreePoint(minHandSwayAmplitude, midHandSwayAmplitude, maxHandSwayAmplitude, speedIntensity);
+            float targetFrequency = InterpolateThreePoint(minHandSwayFrequency, midHandSwayFrequency, maxHandSwayFrequency, speedIntensity);
 
-            handSwayPhase = Mathf.Repeat(handSwayPhase + frequency * deltaTime * Mathf.PI * 2f, Mathf.PI * 2f);
+            float amplitudeTransitionSpeed = targetAmplitude > currentHandSwayAmplitude ? swayMagnitudeIncreaseSpeed : swayMagnitudeDecreaseSpeed;
+            float frequencyTransitionSpeed = targetFrequency > currentHandSwayFrequency ? swayFrequencyIncreaseSpeed : swayFrequencyDecreaseSpeed;
 
-            float horizontalOffset = Mathf.Sin(handSwayPhase) * amplitude;
-            float verticalOffset = Mathf.Sin(handSwayPhase * 2f) * amplitude * 0.5f;
+            currentHandSwayAmplitude = Mathf.MoveTowards(currentHandSwayAmplitude, targetAmplitude, amplitudeTransitionSpeed * deltaTime);
+            currentHandSwayFrequency = Mathf.MoveTowards(currentHandSwayFrequency, targetFrequency, frequencyTransitionSpeed * deltaTime);
+
+            handSwayPhase = Mathf.Repeat(handSwayPhase + currentHandSwayFrequency * deltaTime * Mathf.PI * 2f, Mathf.PI * 2f);
+
+            float horizontalOffset = Mathf.Sin(handSwayPhase) * currentHandSwayAmplitude;
+            float verticalOffset = Mathf.Sin(handSwayPhase * 2f) * currentHandSwayAmplitude * 0.5f;
 
             armRight.localPosition = armRightBaseLocalPosition + new Vector3(horizontalOffset, verticalOffset, 0f);
         }
