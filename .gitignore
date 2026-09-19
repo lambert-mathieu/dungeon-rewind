@@ -78,7 +78,7 @@ crashlytics-build.properties
 # IDE / editor
 .idea/
 *.iml
-.vscode/
+.vscode/*
 !.vscode/settings.json
 !.vscode/tasks.json
 !.vscode/launch.json
