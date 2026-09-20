@@ -10,6 +10,7 @@ namespace DungeonRewind.Enemy {
         private const float minAttackCooldown = 8.0f;
         private const float maxAttackCooldown = 10.0f;
         private const float moveSpeed = 3.0f;
+        private const float attackWindupDuration = 0.7f;
         private const float spikeHeight = 2.0f;
         private const float spikeRadius = 0.3f;
 
@@ -21,6 +22,7 @@ namespace DungeonRewind.Enemy {
         protected override float MinAttackCooldown => minAttackCooldown;
         protected override float MaxAttackCooldown => maxAttackCooldown;
         protected override float MoveSpeed => moveSpeed;
+        protected override float PrepareAttackDuration => attackWindupDuration;
 
         protected override void PerformAttack() {
             Vector3 spawnPosition = transform.position + Vector3.up * (spikeHeight * 0.5f);

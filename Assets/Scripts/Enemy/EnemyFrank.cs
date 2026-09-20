@@ -10,6 +10,7 @@ namespace DungeonRewind.Enemy {
         private const float minAttackCooldown = 6.0f;
         private const float maxAttackCooldown = 8.0f;
         private const float moveSpeed = 3.0f;
+        private const float attackWindupDuration = 0.6f;
         private const float fireballSpawnHeight = 1.5f;
         private const float fireballRadius = 0.25f;
 
@@ -21,6 +22,7 @@ namespace DungeonRewind.Enemy {
         protected override float MinAttackCooldown => minAttackCooldown;
         protected override float MaxAttackCooldown => maxAttackCooldown;
         protected override float MoveSpeed => moveSpeed;
+        protected override float PrepareAttackDuration => attackWindupDuration;
 
         protected override void PerformAttack() {
             Vector3 spawnPosition = transform.position + Vector3.up * fireballSpawnHeight;

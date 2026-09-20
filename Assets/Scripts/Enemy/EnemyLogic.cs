@@ -20,8 +20,8 @@ namespace DungeonRewind.Enemy {
         protected abstract float MinAttackCooldown { get; }
         protected abstract float MaxAttackCooldown { get; }
         protected abstract float MoveSpeed { get; }
+        protected abstract float PrepareAttackDuration { get; }
         protected virtual float MoveFrameInterval => 0.3f;
-        protected virtual float PrepareAttackDuration => 0.5f;
         protected virtual float AttackPoseDuration => 0.5f;
 
         private int currentHealth;
@@ -48,7 +48,7 @@ namespace DungeonRewind.Enemy {
                 return;
             }
 
-            float distanceToPlayer = Vector3.Distance(transform.position, PlayerGlobal.PlayerTransform.position);
+            float distanceToPlayer = GetHorizontalDistanceToPlayer(transform.position);
 
             switch (currentState) {
                 case EnemyState.Idle:
@@ -103,9 +103,7 @@ namespace DungeonRewind.Enemy {
                 return;
             }
 
-            Vector3 playerPosition = PlayerGlobal.PlayerTransform.position;
-            playerPosition.y = rb.position.y;
-
+            Vector3 playerPosition = GetFlattenedPlayerPosition(rb.position.y);
             float distanceToPlayer = Vector3.Distance(rb.position, playerPosition);
             float distanceError = distanceToPlayer - DesiredAttackDistance;
             if (Mathf.Abs(distanceError) <= AttackDistanceTolerance) {
@@ -131,6 +129,16 @@ namespace DungeonRewind.Enemy {
             }
 
             enemyVisual.rotation = Quaternion.LookRotation(direction);
+        }
+
+        private Vector3 GetFlattenedPlayerPosition(float atHeight) {
+            Vector3 playerPosition = PlayerGlobal.PlayerTransform.position;
+            playerPosition.y = atHeight;
+            return playerPosition;
+        }
+
+        private float GetHorizontalDistanceToPlayer(Vector3 fromPosition) {
+            return Vector3.Distance(fromPosition, GetFlattenedPlayerPosition(fromPosition.y));
         }
 
         private void EnterState(EnemyState newState) {

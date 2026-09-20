@@ -10,6 +10,7 @@ namespace DungeonRewind.Enemy {
         private const float minAttackCooldown = 4.0f;
         private const float maxAttackCooldown = 99.0f;
         private const float moveSpeed = 4.0f;
+        private const float attackWindupDuration = 0.3f;
         private const float meleeHitSpawnDistance = 1.0f;
         private const float meleeHitSize = 0.5f;
 
@@ -21,6 +22,7 @@ namespace DungeonRewind.Enemy {
         protected override float MinAttackCooldown => minAttackCooldown;
         protected override float MaxAttackCooldown => maxAttackCooldown;
         protected override float MoveSpeed => moveSpeed;
+        protected override float PrepareAttackDuration => attackWindupDuration;
 
         protected override void PerformAttack() {
             Vector3 directionToPlayer = (PlayerGlobal.PlayerTransform.position - transform.position).normalized;
