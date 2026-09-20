@@ -10,7 +10,7 @@ public class PlayerState : IDamageable {
         CurrentHealth = maxHealth;
     }
 
-    public void TakeDamage(int amount) {
+    public void TakeDamage(int amount, bool causedByRewindMagic) {
         CurrentHealth = Mathf.Clamp(CurrentHealth - amount, 0, MaxHealth);
     }
 }
@@ -44,7 +44,7 @@ public class PlayerGlobal : MonoBehaviour, IDamageable {
         }
     }
 
-    public void TakeDamage(int amount) {
-        State.TakeDamage(amount);
+    public void TakeDamage(int amount, bool causedByRewindMagic) {
+        State.TakeDamage(amount, causedByRewindMagic);
     }
 }
