@@ -3,9 +3,9 @@ using UnityEngine;
 
 namespace DungeonRewind.Enemy {
     public sealed class EnemyMaxime : EnemyLogic {
-        private const int maxHealth = 45;
-        private const float desiredAttackDistanceFar = 17.0f;
-        private const float desiredAttackDistanceNear = 11.0f;
+        private const int maxHealth = 225;
+        private const float desiredAttackDistanceFar = 18.0f;
+        private const float desiredAttackDistanceNear = 10.0f;
         private const float attackDistanceTolerance = 0.5f;
         private const float aggroGetDistance = 20.0f;
         private const float aggroLoseDistance = 150.0f;
@@ -13,7 +13,7 @@ namespace DungeonRewind.Enemy {
         private const float maxAttackCooldown = 7.0f;
         private const float moveSpeed = 7.9f;
         private const float attackWindupDuration = 0.7f;
-        private const int spikeDirectionCount = 5;
+        private const int spikeDirectionCount = 6;
         private const float spikeGapFromEnemy = 2.5f;
         private const float spikeClearanceDelay = 0.1f;
 

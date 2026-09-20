@@ -12,6 +12,7 @@ namespace DungeonRewind.Enemy {
         [SerializeField, Min(0.0f)] private float holdDuration = 4.0f;
         [SerializeField, Min(0.01f)] private float spikeSpacing = 1.2f;
         [SerializeField] private int damage = 35;
+        [SerializeField, Min(1)] private int selfDamageMultiplier = 5;
 
         private readonly List<GameObject> spikeInstances = new List<GameObject>();
         private readonly HashSet<IDamageable> damagedTargets = new HashSet<IDamageable>();
@@ -81,7 +82,8 @@ namespace DungeonRewind.Enemy {
                 return;
             }
 
-            damageable.TakeDamage(damage, isRewinding);
+            int appliedDamage = isOwner ? damage * selfDamageMultiplier : damage;
+            damageable.TakeDamage(appliedDamage, isRewinding);
 
             if (isOwner) {
                 onOwnerHit?.Invoke();
