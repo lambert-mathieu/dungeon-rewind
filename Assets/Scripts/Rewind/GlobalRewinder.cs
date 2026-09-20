@@ -8,6 +8,8 @@ namespace DungeonRewind.Rewind
     {
         public static GlobalRewinder Instance { get; private set; }
 
+        public static event Action<bool> RewindStateChanged;
+
         [Header("Rewind Fuel")]
         [SerializeField] private float maxRewindTime = 5f;
         [SerializeField] private float rewindRegenSpeed = 1f;
@@ -33,6 +35,7 @@ namespace DungeonRewind.Rewind
             if (CurrentRewindTime <= 0f) return;
 
             isRewinding = true;
+            RewindStateChanged?.Invoke(true);
 
             foreach (RewindableObject rewindable in FindObjectsByType<RewindableObject>(FindObjectsSortMode.None))
             {
@@ -46,13 +49,17 @@ namespace DungeonRewind.Rewind
             {
                 rewindable.EndRewind();
             }
-            isRewinding = false;
+
+            if (isRewinding)
+            {
+                isRewinding = false;
+                RewindStateChanged?.Invoke(false);
+            }
         }
 
         private void OnUseAbility(InputValue value)
         {
-            bool isPressed = value.isPressed;
-            if (isPressed)
+            if (value.isPressed)
             {
                 BeginRewindAll();
             }
