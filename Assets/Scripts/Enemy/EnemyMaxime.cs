@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using UnityEngine;
 
 namespace DungeonRewind.Enemy {
@@ -7,12 +8,18 @@ namespace DungeonRewind.Enemy {
         private const float attackDistanceTolerance = 1.0f;
         private const float aggroGetDistance = 20.0f;
         private const float aggroLoseDistance = 150.0f;
-        private const float minAttackCooldown = 9.0f;
-        private const float maxAttackCooldown = 10.0f;
+        private const float minAttackCooldown = 5.0f;
+        private const float maxAttackCooldown = 6.0f;
         private const float moveSpeed = 5.5f;
         private const float attackWindupDuration = 0.7f;
-        private const float spikeHeight = 2.0f;
-        private const float spikeRadius = 0.3f;
+        private const int spikeDirectionCount = 11;
+        private const float spikeGapFromEnemy = 2.5f;
+        private const float spikeClearanceDelay = 0.1f;
+
+        [SerializeField] private GroundSpike spikePrefab;
+
+        private readonly List<GroundSpike> activeSpikes = new List<GroundSpike>();
+        private Collider ownerCollider;
 
         protected override int MaxHealth => maxHealth;
         protected override float DesiredAttackDistance => desiredAttackDistance;
@@ -23,14 +30,54 @@ namespace DungeonRewind.Enemy {
         protected override float MaxAttackCooldown => maxAttackCooldown;
         protected override float MoveSpeed => moveSpeed;
         protected override float PrepareAttackDuration => attackWindupDuration;
+        protected override float AttackPoseDuration => spikePrefab != null ? spikePrefab.Lifetime + spikeClearanceDelay : base.AttackPoseDuration;
 
         protected override void PerformAttack() {
-            Vector3 spawnPosition = transform.position + Vector3.up * (spikeHeight * 0.5f);
+            if (spikePrefab == null) {
+                return;
+            }
 
-            GameObject spike = GameObject.CreatePrimitive(PrimitiveType.Cylinder);
-            spike.name = "GroundSpike";
-            spike.transform.SetPositionAndRotation(spawnPosition, Quaternion.identity);
-            spike.transform.localScale = new Vector3(spikeRadius, spikeHeight * 0.5f, spikeRadius);
+            if (ownerCollider == null) {
+                TryGetComponent(out ownerCollider);
+            }
+
+            Vector3 groundCenter = new Vector3(transform.position.x, ownerCollider.bounds.min.y, transform.position.z);
+            activeSpikes.Clear();
+            float yawTowardsPlayer = GetYawTowardsPlayer();
+            float angleStep = 360.0f / spikeDirectionCount;
+
+            for (int i = 0; i < spikeDirectionCount; i++) {
+                Quaternion spikeRotation = Quaternion.Euler(0.0f, yawTowardsPlayer + angleStep * i, 0.0f);
+                Vector3 spawnPosition = groundCenter + spikeRotation * Vector3.forward * spikeGapFromEnemy;
+                GroundSpike spike = Instantiate(spikePrefab, spawnPosition, spikeRotation);
+                spike.Launch(transform, DespawnActiveSpikes);
+                activeSpikes.Add(spike);
+            }
+        }
+
+        private void DespawnActiveSpikes() {
+            foreach (GroundSpike spike in activeSpikes) {
+                if (spike != null) {
+                    Destroy(spike.gameObject);
+                }
+            }
+
+            activeSpikes.Clear();
+        }
+
+        private float GetYawTowardsPlayer() {
+            if (PlayerGlobal.PlayerTransform == null) {
+                return transform.eulerAngles.y;
+            }
+
+            Vector3 directionToPlayer = PlayerGlobal.PlayerTransform.position - transform.position;
+            directionToPlayer.y = 0.0f;
+
+            if (directionToPlayer.sqrMagnitude < 0.0001f) {
+                return transform.eulerAngles.y;
+            }
+
+            return Quaternion.LookRotation(directionToPlayer).eulerAngles.y;
         }
     }
 }

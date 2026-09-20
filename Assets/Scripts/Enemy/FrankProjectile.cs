@@ -62,7 +62,7 @@ namespace DungeonRewind.Enemy
                 return;
             }
 
-            if (TryGetDamageable(other, out IDamageable damageable))
+            if (DamageableLookup.TryGetDamageable(other, out IDamageable damageable))
             {
                 damageable.TakeDamage(damage, isRewinding);
             }
@@ -78,16 +78,6 @@ namespace DungeonRewind.Enemy
         private static bool IsFrankProjectile(Collider other)
         {
             return other.TryGetComponent(out FrankProjectile _);
-        }
-
-        private static bool TryGetDamageable(Collider other, out IDamageable damageable)
-        {
-            if (other.TryGetComponent(out damageable))
-            {
-                return true;
-            }
-
-            return other.attachedRigidbody != null && other.attachedRigidbody.TryGetComponent(out damageable);
         }
 
         public void SuspendForRewind()

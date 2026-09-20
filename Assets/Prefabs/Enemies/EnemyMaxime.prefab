@@ -10,6 +10,7 @@ GameObject:
   m_Component:
   - component: {fileID: 9190761116267000559}
   - component: {fileID: 4144508462899005780}
+  - component: {fileID: 7773971002354681992}
   m_Layer: 0
   m_Name: Attack
   m_TagString: Untagged
@@ -91,6 +92,19 @@ SpriteRenderer:
   m_SpriteTileMode: 0
   m_WasSpriteAssigned: 1
   m_SpriteSortPoint: 0
+--- !u!114 &7773971002354681992
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 102689760968098499}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 122654535d8e5c74b99c1f1d663ba65d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::DungeonRewind.Rewind.ActiveRecorder
+  recordRate: 30
 --- !u!1 &855995858160905147
 GameObject:
   m_ObjectHideFlags: 0
@@ -101,6 +115,7 @@ GameObject:
   m_Component:
   - component: {fileID: 3512257717822997875}
   - component: {fileID: 2146371509520690869}
+  - component: {fileID: 926021141798299593}
   m_Layer: 0
   m_Name: Move2
   m_TagString: Untagged
@@ -182,6 +197,19 @@ SpriteRenderer:
   m_SpriteTileMode: 0
   m_WasSpriteAssigned: 1
   m_SpriteSortPoint: 0
+--- !u!114 &926021141798299593
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 855995858160905147}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 122654535d8e5c74b99c1f1d663ba65d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::DungeonRewind.Rewind.ActiveRecorder
+  recordRate: 30
 --- !u!1 &1550598214193089225
 GameObject:
   m_ObjectHideFlags: 0
@@ -192,6 +220,7 @@ GameObject:
   m_Component:
   - component: {fileID: 6433864128664364930}
   - component: {fileID: 8195417927715268115}
+  - component: {fileID: 3235390858028033370}
   m_Layer: 0
   m_Name: Move1
   m_TagString: Untagged
@@ -273,6 +302,19 @@ SpriteRenderer:
   m_SpriteTileMode: 0
   m_WasSpriteAssigned: 1
   m_SpriteSortPoint: 0
+--- !u!114 &3235390858028033370
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1550598214193089225}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 122654535d8e5c74b99c1f1d663ba65d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::DungeonRewind.Rewind.ActiveRecorder
+  recordRate: 30
 --- !u!1 &2154940520170150625
 GameObject:
   m_ObjectHideFlags: 0
@@ -321,6 +363,8 @@ GameObject:
   - component: {fileID: 6392979382810352814}
   - component: {fileID: 4693722089458220910}
   - component: {fileID: 2543139556233103576}
+  - component: {fileID: 1462520552969794506}
+  - component: {fileID: 6287828208399365529}
   m_Layer: 0
   m_Name: EnemyMaxime
   m_TagString: Untagged
@@ -385,6 +429,7 @@ MonoBehaviour:
   move2Visual: {fileID: 855995858160905147}
   prepareAttackVisual: {fileID: 4569542476918123959}
   attackVisual: {fileID: 102689760968098499}
+  spikePrefab: {fileID: 7301128845690231003, guid: 3e3e23b82f23fe23b9227ba549f3c36b, type: 3}
 --- !u!54 &2543139556233103576
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -412,6 +457,32 @@ Rigidbody:
   m_Interpolate: 1
   m_Constraints: 112
   m_CollisionDetection: 2
+--- !u!114 &1462520552969794506
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3267548712344401292}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fdc94a47c1d645e42821331ee670cb06, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::DungeonRewind.Rewind.Recorders.RigidbodyRecorder
+  recordRate: 30
+  collisionSkin: 0.05
+--- !u!114 &6287828208399365529
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3267548712344401292}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 90142865236ab09479ebd5440cf52182, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::DungeonRewind.Rewind.RewindableObject
 --- !u!1 &4569542476918123959
 GameObject:
   m_ObjectHideFlags: 0
@@ -422,6 +493,7 @@ GameObject:
   m_Component:
   - component: {fileID: 5019547365137752703}
   - component: {fileID: 1007337352023358753}
+  - component: {fileID: 811728967082427453}
   m_Layer: 0
   m_Name: PrepareAttack
   m_TagString: Untagged
@@ -503,6 +575,19 @@ SpriteRenderer:
   m_SpriteTileMode: 0
   m_WasSpriteAssigned: 1
   m_SpriteSortPoint: 0
+--- !u!114 &811728967082427453
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4569542476918123959}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 122654535d8e5c74b99c1f1d663ba65d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::DungeonRewind.Rewind.ActiveRecorder
+  recordRate: 30
 --- !u!1 &6938061930726931755
 GameObject:
   m_ObjectHideFlags: 0
@@ -513,6 +598,7 @@ GameObject:
   m_Component:
   - component: {fileID: 7441002025200517318}
   - component: {fileID: 5940732296073846028}
+  - component: {fileID: 4145096165795501401}
   m_Layer: 0
   m_Name: Idle
   m_TagString: Untagged
@@ -594,3 +680,16 @@ SpriteRenderer:
   m_SpriteTileMode: 0
   m_WasSpriteAssigned: 1
   m_SpriteSortPoint: 0
+--- !u!114 &4145096165795501401
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6938061930726931755}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 122654535d8e5c74b99c1f1d663ba65d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::DungeonRewind.Rewind.ActiveRecorder
+  recordRate: 30
