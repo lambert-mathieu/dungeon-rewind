@@ -3,7 +3,7 @@ using UnityEngine;
 using UnityEngine.InputSystem;
 
 namespace DungeonRewind.Player {
-    [RequireComponent(typeof(FirstPersonController))]
+    [RequireComponent(typeof(PlayerMovement))]
     public class PlayerCamera : MonoBehaviour, IRewindSuspendable {
         private const float mouseSensitivity = 0.12f;
         private const float minPitch = -88.0f;
@@ -50,7 +50,7 @@ namespace DungeonRewind.Player {
         private const float landingSwayReferenceSpeed = 12.0f;
         private const float maxVerticalSwayOffset = 0.25f;
 
-        private FirstPersonController firstPersonController;
+        private PlayerMovement playerMovement;
 
         private Vector2 lookInput;
         private float pitch;
@@ -70,7 +70,7 @@ namespace DungeonRewind.Player {
         private bool rewinding = false;
 
         private void Awake() {
-            firstPersonController = GetComponent<FirstPersonController>();
+            playerMovement = GetComponent<PlayerMovement>();
             baseFieldOfView = armCamera.fieldOfView;
             armsBaseLocalPosition = arms.localPosition;
             leftArmBaseLocalPosition = leftArm.localPosition;
@@ -96,7 +96,7 @@ namespace DungeonRewind.Player {
                 return;
             }
 
-            Vector3 horizontalVelocity = firstPersonController.HorizontalVelocity;
+            Vector3 horizontalVelocity = playerMovement.HorizontalVelocity;
             float directionFactor = CalculateDirectionFactor(horizontalVelocity);
 
             UpdateDynamicFieldOfView(CalculateFieldOfViewSpeedIntensity(horizontalVelocity, directionFactor), deltaTime);
@@ -119,7 +119,7 @@ namespace DungeonRewind.Player {
                 return;
             }
 
-            if (!firstPersonController.IsSuspended) {
+            if (!playerMovement.IsSuspended) {
                 cameraRoot.Rotate(Vector3.up * (lookInput.x * mouseSensitivity));
             }
 
@@ -166,12 +166,12 @@ namespace DungeonRewind.Player {
             float targetAmplitude = InterpolateThreePoint(minHandSwayAmplitude, midHandSwayAmplitude, maxHandSwayAmplitude, speedIntensity);
             float targetFrequency = InterpolateThreePoint(minHandSwayFrequency, midHandSwayFrequency, maxHandSwayFrequency, speedIntensity);
 
-            if (!firstPersonController.IsGrounded) {
+            if (!playerMovement.IsGrounded) {
                 targetAmplitude *= airborneHandSwayMultiplier;
                 targetFrequency *= airborneHandSwayMultiplier;
             }
 
-            float targetAirborneHandSpread = firstPersonController.IsGrounded ? 0f : airborneHandSpreadOffset;
+            float targetAirborneHandSpread = playerMovement.IsGrounded ? 0f : airborneHandSpreadOffset;
             float spreadTransitionSpeed = targetAirborneHandSpread > currentAirborneHandSpread ? airborneHandSpreadIncreaseSpeed : airborneHandSpreadDecreaseSpeed;
             currentAirborneHandSpread = Mathf.MoveTowards(currentAirborneHandSpread, targetAirborneHandSpread, spreadTransitionSpeed * deltaTime);
 
@@ -192,7 +192,7 @@ namespace DungeonRewind.Player {
         }
 
         private void DetectJumpAndLandingEvents() {
-            bool isGroundedNow = firstPersonController.IsGrounded;
+            bool isGroundedNow = playerMovement.IsGrounded;
 
             if (!hasGroundStateBaseline) {
                 hasGroundStateBaseline = true;
@@ -201,10 +201,10 @@ namespace DungeonRewind.Player {
             }
 
             if (isGroundedNow && !wasGroundedLastFrame) {
-                float impactSpeed = Mathf.Abs(firstPersonController.VerticalVelocity);
+                float impactSpeed = Mathf.Abs(playerMovement.VerticalVelocity);
                 float landingIntensity = Mathf.Clamp01(impactSpeed / landingSwayReferenceSpeed);
                 ApplyVerticalSwayKick(-Mathf.Lerp(minLandingSwayKickVelocity, maxLandingSwayKickVelocity, landingIntensity));
-            } else if (!isGroundedNow && wasGroundedLastFrame && firstPersonController.VerticalVelocity >= jumpDetectionVerticalVelocityThreshold) {
+            } else if (!isGroundedNow && wasGroundedLastFrame && playerMovement.VerticalVelocity >= jumpDetectionVerticalVelocityThreshold) {
                 ApplyVerticalSwayKick(-jumpSwayKickVelocity);
             }
 

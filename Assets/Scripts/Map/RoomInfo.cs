@@ -8,17 +8,17 @@ public enum RoomType
     Hard,
     MiniBoss,
     Boss,
-    Blocked
+    Blocked, 
+    Teleport
 }
 
 public static class RoomRunData
 {
-    // Information handed over to your teammate's generator
-    public static RoomType SelectedRoomType = RoomType.Tutorial;
+    // Null indicates no choice has been made yet
+    public static RoomType? SelectedRoomType = null;
     public static int ColumnDepth = 0;
     public static Vector2Int SelectedNodeCoord = new Vector2Int(0, 0);
 
-    // Track progression across the hex tree
     public static Vector2Int CurrentNode = new Vector2Int(0, 0);
     public static HashSet<Vector2Int> VisitedNodes = new HashSet<Vector2Int>();
 
@@ -29,14 +29,14 @@ public static class RoomRunData
 
         SelectedNodeCoord = coord;
         SelectedRoomType = type;
-        ColumnDepth = coord.x; // Column depth serves as the difficulty scaler
+        ColumnDepth = coord.x;
     }
 
     public static void ResetRun()
     {
         CurrentNode = new Vector2Int(0, 0);
         VisitedNodes.Clear();
-        SelectedRoomType = RoomType.Tutorial;
+        SelectedRoomType = null;
         ColumnDepth = 0;
     }
 }
