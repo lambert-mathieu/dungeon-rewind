@@ -4,7 +4,7 @@ using UnityEngine.InputSystem;
 
 namespace DungeonRewind.Player {
     [RequireComponent(typeof(Rigidbody))]
-    public class FirstPersonController : RewindRecorder<PlayerControllerState>, IRewindSuspendable {
+    public class PlayerMovement : RewindRecorder<PlayerControllerState>, IRewindSuspendable {
         private const float groundSpeed = 10.0f;
         private const float crouchSpeed = 7.0f;
         private const float groundAcceleration = 180.0f;
