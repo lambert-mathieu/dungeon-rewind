@@ -101,8 +101,8 @@ public class HexMapNode : MonoBehaviour, IPointerClickHandler
         string nextRoomName = roomType switch
         {
             RoomType.Tutorial => "TutorialRoom",
-            RoomType.Easy => "EnemyRoom",
-            RoomType.Hard => "EnemyRoom2",
+            RoomType.Easy => "EnemyRoom2",
+            RoomType.Hard => "EnemyRoom",
             RoomType.MiniBoss => "EnemyRoom",
             RoomType.Boss => "EnemyRoom2",
             RoomType.Blocked => "EnemyRoom",
