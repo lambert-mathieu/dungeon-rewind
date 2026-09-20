@@ -3,15 +3,15 @@ using UnityEngine;
 namespace DungeonRewind.Enemy {
     public sealed class EnemyIlyes : EnemyLogic {
         private const int maxHealth = 50;
-        private const float desiredAttackDistance = 2.4f;
-        private const float attackDistanceTolerance = 1.2f;
+        private const float desiredAttackDistance = 0.0f;
+        private const float attackDistanceTolerance = 3.0f;
         private const float aggroGetDistance = 20.0f;
         private const float aggroLoseDistance = 150.0f;
         private const float minAttackCooldown = 2.0f;
         private const float maxAttackCooldown = 999.0f;
         private const float moveSpeed = 6.0f;
         private const float attackWindupDuration = 0.6f;
-        private const float meleeDetectionRange = 4.2f;
+        private const float meleeDetectionRange = 3.6f;
         private const int meleeDamage = 10;
 
         protected override int MaxHealth => maxHealth;
