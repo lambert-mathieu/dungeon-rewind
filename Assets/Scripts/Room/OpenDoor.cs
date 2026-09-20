@@ -176,5 +176,12 @@ public class OpenDoor : MonoBehaviour
             door.transform.localPosition = new Vector3(0, 6, 0);
         }
 
+        Debug.Log(
+            $"FOCUS: {Application.isFocused}\n" +
+            $"CURSOR: {Cursor.lockState}\n" +
+            $"VISIBLE: {Cursor.visible}\n" +
+            $"MOUSE: {Input.mousePosition}"
+        );
+
     }
 }

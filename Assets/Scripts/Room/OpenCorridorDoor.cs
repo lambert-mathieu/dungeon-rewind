@@ -196,5 +196,11 @@ public class OpenCorridorDoor : MonoBehaviour
             Cursor.lockState = CursorLockMode.None;
             Cursor.visible = true;
         }
+
+        if (!cameraRefs.graphCamera.isActiveAndEnabled)
+        {
+            Cursor.lockState = CursorLockMode.Locked;
+            Cursor.visible = false;
+        }
     }
 }

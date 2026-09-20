@@ -29,9 +29,6 @@ public class HexGridManager : MonoBehaviour
 
     void Start()
     {
-        // Unlock cursor and make it visible for clicking tiles
-        Cursor.lockState = CursorLockMode.None;
-        Cursor.visible = true;
 
         GenerateGrid();
     }
