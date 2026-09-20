@@ -249,24 +249,15 @@ MonoBehaviour:
   m_GameObject: {fileID: 2986465394985626032}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 6527b8d5861748fa9c81d93792d71f9c, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  maxHealth: 30
+  m_Script: {fileID: 11500000, guid: 213dad4d1798d70df2753d75fae03e95, type: 3}
+  m_Name:
+  m_EditorClassIdentifier:
   enemyVisual: {fileID: 1778101679423840758}
   idleVisual: {fileID: 2447830890074349465}
   move1Visual: {fileID: 7787505924437506535}
   move2Visual: {fileID: 6025349427591013332}
   prepareAttackVisual: {fileID: 1391555436543146240}
   attackVisual: {fileID: 8801482159632052368}
-  detectionRange: 10
-  attackRange: 6
-  moveSpeed: 2
-  moveFrameInterval: 0.3
-  prepareAttackDuration: 0.5
-  attackPoseDuration: 0.5
-  fireballSpawnHeight: 1.5
-  fireballRadius: 0.25
 --- !u!54 &9178045084736756793
 Rigidbody:
   m_ObjectHideFlags: 0

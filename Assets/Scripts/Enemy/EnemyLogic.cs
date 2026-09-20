@@ -2,10 +2,9 @@ using UnityEngine;
 
 namespace DungeonRewind.Enemy {
     [RequireComponent(typeof(Rigidbody))]
-    public class EnemyLogic : MonoBehaviour {
-        private enum EnemyState { Idle, Move, PrepareAttack, Attack }
+    public abstract class EnemyLogic : MonoBehaviour {
+        protected enum EnemyState { Idle, Reposition, PrepareAttack, Attack }
 
-        [SerializeField] private int maxHealth = 30;
         [SerializeField] private Transform enemyVisual;
         [SerializeField] private GameObject idleVisual;
         [SerializeField] private GameObject move1Visual;
@@ -13,29 +12,35 @@ namespace DungeonRewind.Enemy {
         [SerializeField] private GameObject prepareAttackVisual;
         [SerializeField] private GameObject attackVisual;
 
-        [SerializeField] private float detectionRange = 10f;
-        [SerializeField] private float attackRange = 6f;
-        [SerializeField] private float moveSpeed = 2f;
-        [SerializeField] private float moveFrameInterval = 0.3f;
-        [SerializeField] private float prepareAttackDuration = 0.5f;
-        [SerializeField] private float attackPoseDuration = 0.5f;
-        [SerializeField] private float fireballSpawnHeight = 1.5f;
-        [SerializeField] private float fireballRadius = 0.25f;
+        protected abstract int MaxHealth { get; }
+        protected abstract float DesiredAttackDistance { get; }
+        protected abstract float AttackDistanceTolerance { get; }
+        protected abstract float AggroGetDistance { get; }
+        protected abstract float AggroLoseDistance { get; }
+        protected abstract float MinAttackCooldown { get; }
+        protected abstract float MaxAttackCooldown { get; }
+        protected abstract float MoveSpeed { get; }
+        protected virtual float MoveFrameInterval => 0.3f;
+        protected virtual float PrepareAttackDuration => 0.5f;
+        protected virtual float AttackPoseDuration => 0.5f;
 
         private int currentHealth;
         private Rigidbody rb;
         private EnemyState currentState;
         private float stateTimer;
+        private float timeSinceLastAttack;
         private bool isShowingMove1 = true;
 
         private void Awake() {
-            currentHealth = maxHealth;
+            currentHealth = MaxHealth;
             TryGetComponent(out rb);
             rb.isKinematic = true;
             EnterState(EnemyState.Idle);
         }
 
         private void Update() {
+            timeSinceLastAttack += Time.deltaTime;
+
             if (PlayerGlobal.PlayerTransform == null) {
                 if (currentState != EnemyState.Idle) {
                     EnterState(EnemyState.Idle);
@@ -47,25 +52,33 @@ namespace DungeonRewind.Enemy {
 
             switch (currentState) {
                 case EnemyState.Idle:
-                    if (distanceToPlayer <= attackRange) {
-                        EnterState(EnemyState.PrepareAttack);
-                    } else if (distanceToPlayer <= detectionRange) {
-                        EnterState(EnemyState.Move);
+                    if (distanceToPlayer <= AggroGetDistance) {
+                        EnterState(EnemyState.Reposition);
                     }
                     break;
 
-                case EnemyState.Move:
-                    if (distanceToPlayer <= attackRange) {
-                        EnterState(EnemyState.PrepareAttack);
-                    } else if (distanceToPlayer > detectionRange) {
+                case EnemyState.Reposition:
+                    if (distanceToPlayer > AggroLoseDistance) {
                         EnterState(EnemyState.Idle);
+                        break;
+                    }
+
+                    bool isInAttackBand = Mathf.Abs(distanceToPlayer - DesiredAttackDistance) <= AttackDistanceTolerance;
+                    if (isInAttackBand) {
+                        SetActiveVisual(idleVisual);
                     } else {
                         UpdateMoveAnimation();
+                    }
+
+                    bool canAttack = timeSinceLastAttack >= MinAttackCooldown;
+                    bool mustForceAttack = timeSinceLastAttack >= MaxAttackCooldown;
+                    if (canAttack && (isInAttackBand || mustForceAttack)) {
+                        EnterState(EnemyState.PrepareAttack);
                     }
                     break;
 
                 case EnemyState.PrepareAttack:
-                    if (distanceToPlayer > detectionRange) {
+                    if (distanceToPlayer > AggroLoseDistance) {
                         EnterState(EnemyState.Idle);
                         break;
                     }
@@ -79,21 +92,29 @@ namespace DungeonRewind.Enemy {
                 case EnemyState.Attack:
                     stateTimer -= Time.deltaTime;
                     if (stateTimer <= 0f) {
-                        EnterState(distanceToPlayer <= attackRange ? EnemyState.PrepareAttack : EnemyState.Idle);
+                        EnterState(distanceToPlayer > AggroLoseDistance ? EnemyState.Idle : EnemyState.Reposition);
                     }
                     break;
             }
         }
 
         private void FixedUpdate() {
-            if (currentState != EnemyState.Move || PlayerGlobal.PlayerTransform == null) {
+            if (currentState != EnemyState.Reposition || PlayerGlobal.PlayerTransform == null) {
                 return;
             }
 
-            Vector3 targetPosition = PlayerGlobal.PlayerTransform.position;
-            targetPosition.y = rb.position.y;
+            Vector3 playerPosition = PlayerGlobal.PlayerTransform.position;
+            playerPosition.y = rb.position.y;
 
-            Vector3 newPosition = Vector3.MoveTowards(rb.position, targetPosition, moveSpeed * Time.fixedDeltaTime);
+            float distanceToPlayer = Vector3.Distance(rb.position, playerPosition);
+            float distanceError = distanceToPlayer - DesiredAttackDistance;
+            if (Mathf.Abs(distanceError) <= AttackDistanceTolerance) {
+                return;
+            }
+
+            Vector3 directionToPlayer = (playerPosition - rb.position).normalized;
+            Vector3 moveDirection = distanceError > 0f ? directionToPlayer : -directionToPlayer;
+            Vector3 newPosition = rb.position + moveDirection * (MoveSpeed * Time.fixedDeltaTime);
             rb.MovePosition(newPosition);
         }
 
@@ -117,21 +138,23 @@ namespace DungeonRewind.Enemy {
 
             switch (newState) {
                 case EnemyState.Idle:
+                    timeSinceLastAttack = 0f;
                     SetActiveVisual(idleVisual);
                     break;
-                case EnemyState.Move:
+                case EnemyState.Reposition:
                     isShowingMove1 = true;
-                    stateTimer = moveFrameInterval;
+                    stateTimer = MoveFrameInterval;
                     SetActiveVisual(move1Visual);
                     break;
                 case EnemyState.PrepareAttack:
-                    stateTimer = prepareAttackDuration;
+                    stateTimer = PrepareAttackDuration;
                     SetActiveVisual(prepareAttackVisual);
                     break;
                 case EnemyState.Attack:
-                    stateTimer = attackPoseDuration;
+                    stateTimer = AttackPoseDuration;
+                    timeSinceLastAttack = 0f;
                     SetActiveVisual(attackVisual);
-                    ThrowFireball();
+                    PerformAttack();
                     break;
             }
         }
@@ -142,7 +165,7 @@ namespace DungeonRewind.Enemy {
                 return;
             }
 
-            stateTimer = moveFrameInterval;
+            stateTimer = MoveFrameInterval;
             isShowingMove1 = !isShowingMove1;
             SetActiveVisual(isShowingMove1 ? move1Visual : move2Visual);
         }
@@ -155,15 +178,7 @@ namespace DungeonRewind.Enemy {
             attackVisual.SetActive(attackVisual == visualToShow);
         }
 
-        private void ThrowFireball() {
-            Vector3 spawnPosition = transform.position + Vector3.up * fireballSpawnHeight;
-            Vector3 directionToPlayer = (PlayerGlobal.PlayerTransform.position - spawnPosition).normalized;
-
-            GameObject fireball = GameObject.CreatePrimitive(PrimitiveType.Sphere);
-            fireball.name = "Fireball";
-            fireball.transform.SetPositionAndRotation(spawnPosition, Quaternion.LookRotation(directionToPlayer));
-            fireball.transform.localScale = Vector3.one * fireballRadius * 2f;
-        }
+        protected abstract void PerformAttack();
 
         public void TakeDamage(int amount) {
             currentHealth -= amount;
