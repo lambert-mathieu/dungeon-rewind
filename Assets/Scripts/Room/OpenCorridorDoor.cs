@@ -1,3 +1,4 @@
+using JetBrains.Annotations;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.SceneManagement;
@@ -148,12 +149,19 @@ public class OpenCorridorDoor : MonoBehaviour
             exitDoor.transform.position
         );
 
-        if (
-            Keyboard.current.eKey.wasPressedThisFrame &&
-            distancePlayerDoor <= minDistance
-        )
+        if (Keyboard.current.eKey.wasPressedThisFrame && distancePlayerDoor <= minDistance)
         {
-            LoadNextRoom("EnemyRoom");
+
+            // When Pick Room Set variable nextroom
+            if (!RoomRunData.SelectedRoomType.HasValue)
+            {
+                Debug.LogWarning("No room has been selected on the map!");
+                return;
+            }
+
+            RoomType chosenType = RoomRunData.SelectedRoomType.Value;
+            LoadNextRoom(chosenType.ToString());
+            
 
             exitDoor.transform.localPosition =
                 new Vector3(-7.65f, 6f, 0);
