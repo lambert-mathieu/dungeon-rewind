@@ -35,7 +35,10 @@ namespace DungeonRewind.Enemy {
         private void Awake() {
             currentHealth = MaxHealth;
             TryGetComponent(out rb);
-            rb.isKinematic = true;
+            rb.isKinematic = false;
+            rb.constraints = RigidbodyConstraints.FreezeRotation;
+            rb.interpolation = RigidbodyInterpolation.Interpolate;
+            rb.collisionDetectionMode = CollisionDetectionMode.ContinuousDynamic;
             EnterState(EnemyState.Idle);
         }
 
@@ -101,6 +104,7 @@ namespace DungeonRewind.Enemy {
 
         private void FixedUpdate() {
             if (currentState != EnemyState.Reposition || PlayerGlobal.PlayerTransform == null) {
+                ZeroHorizontalVelocity();
                 return;
             }
 
@@ -108,13 +112,18 @@ namespace DungeonRewind.Enemy {
             float distanceToPlayer = Vector3.Distance(rb.position, playerPosition);
             float distanceError = distanceToPlayer - DesiredAttackDistance;
             if (Mathf.Abs(distanceError) <= AttackDistanceTolerance) {
+                ZeroHorizontalVelocity();
                 return;
             }
 
             Vector3 directionToPlayer = (playerPosition - rb.position).normalized;
             Vector3 moveDirection = distanceError > 0f ? directionToPlayer : -directionToPlayer;
-            Vector3 newPosition = rb.position + moveDirection * (MoveSpeed * Time.fixedDeltaTime);
-            rb.MovePosition(newPosition);
+            Vector3 horizontalVelocity = moveDirection * MoveSpeed;
+            rb.linearVelocity = new Vector3(horizontalVelocity.x, rb.linearVelocity.y, horizontalVelocity.z);
+        }
+
+        private void ZeroHorizontalVelocity() {
+            rb.linearVelocity = new Vector3(0f, rb.linearVelocity.y, 0f);
         }
 
         private void LateUpdate() {
