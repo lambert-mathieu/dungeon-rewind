@@ -1,3 +1,4 @@
+using System;
 using JetBrains.Annotations;
 using UnityEngine;
 using UnityEngine.InputSystem;
@@ -11,6 +12,10 @@ public class OpenCorridorDoor : MonoBehaviour
     [SerializeField] private PlayerData playerData;
     [SerializeField] private DungeonData dungeonData;
     [SerializeField] private Transform currentExit;
+    [NonSerialized] CameraRefs cameraRefs = null;
+
+    public SelectedRoom selectedRoom;
+
 
     private float minDistance = 5f;
     private bool isLoadingRoom = false;
@@ -133,41 +138,64 @@ public class OpenCorridorDoor : MonoBehaviour
         isLoadingRoom = false;
     }
 
+    void OpenDoor()
+    {
+         // Call in graph
+        if (!string.IsNullOrEmpty(selectedRoom.roomName))
+        {
+            Debug.Log("Room name: " + selectedRoom.roomName);
+            LoadNextRoom(selectedRoom.roomName);
+
+            exitDoor.transform.localPosition = new Vector3(-7.65f, 6f, 0);
+            entranceDoor.transform.localPosition = new Vector3(7.39f, 2.54f, 0);
+
+        }
+
+        else
+        {
+            Debug.Log("Room name was empty");
+        }
+    }
+
+    void Start()
+    {
+        Scene scene = SceneManager.GetSceneByName("DungeonGenerationScene");
+        if (!scene.isLoaded)
+                {
+                    Debug.LogWarning("PlayerScene is not loaded.");
+                    return;
+                }
+
+
+                foreach (GameObject root in scene.GetRootGameObjects())
+                {
+                    cameraRefs = root.GetComponentInChildren<CameraRefs>(true);
+
+                    if (cameraRefs != null)
+                        break;
+                }
+
+                if (cameraRefs == null)
+                {
+                    Debug.LogWarning("CameraReferences was not found in PlayerScene.");
+                    return;
+                }
+    }
+
     void Update()
     {
+
         if (playerData.playerTransform == null)
             return;
 
-        float distancePlayerDoor =
-            Vector3.Distance(
-                playerData.playerTransform.position,
-                exitDoor.transform.position
-            );
-
-        Debug.DrawLine(
-            playerData.playerTransform.position,
-            exitDoor.transform.position
-        );
+        float distancePlayerDoor = Vector3.Distance(playerData.playerTransform.position, exitDoor.transform.position);
 
         if (Keyboard.current.eKey.wasPressedThisFrame && distancePlayerDoor <= minDistance)
         {
-
-            // When Pick Room Set variable nextroom
-            if (!RoomRunData.SelectedRoomType.HasValue)
-            {
-                Debug.LogWarning("No room has been selected on the map!");
-                return;
-            }
-
-            RoomType chosenType = RoomRunData.SelectedRoomType.Value;
-            LoadNextRoom(chosenType.ToString());
-            
-
-            exitDoor.transform.localPosition =
-                new Vector3(-7.65f, 6f, 0);
-
-            entranceDoor.transform.localPosition =
-                new Vector3(7.39f, 2.54f, 0);
+            cameraRefs.playerCamera.gameObject.SetActive(false);
+            cameraRefs.armCamera.gameObject.SetActive(false);
+            cameraRefs.graphCamera.gameObject.SetActive(true);
         }
+       
     }
 }
