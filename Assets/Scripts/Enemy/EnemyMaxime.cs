@@ -8,10 +8,10 @@ namespace DungeonRewind.Enemy {
         private const float attackDistanceTolerance = 1.0f;
         private const float aggroGetDistance = 20.0f;
         private const float aggroLoseDistance = 150.0f;
-        private const float minAttackCooldown = 5.0f;
-        private const float maxAttackCooldown = 6.0f;
+        private const float minAttackCooldown = 7.0f;
+        private const float maxAttackCooldown = 8.0f;
         private const float moveSpeed = 5.5f;
-        private const float attackWindupDuration = 0.7f;
+        private const float attackWindupDuration = 0.3f;
         private const int spikeDirectionCount = 11;
         private const float spikeGapFromEnemy = 2.5f;
         private const float spikeClearanceDelay = 0.1f;

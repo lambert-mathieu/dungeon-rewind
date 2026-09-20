@@ -47,11 +47,11 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::DungeonRewind.Enemy.GroundSpike
   spikeTemplate: {fileID: 7301128845690231012}
-  growthSpeed: 15
-  maxLength: 7.5
-  holdDuration: 2
+  growthSpeed: 30
+  maxLength: 9
+  holdDuration: 4
   spikeSpacing: 1.2
-  damage: 15
+  damage: 35
 --- !u!114 &7301128845690231004
 MonoBehaviour:
   m_ObjectHideFlags: 0

@@ -9,9 +9,9 @@ namespace DungeonRewind.Enemy {
         [SerializeField] private Transform spikeTemplate;
         [SerializeField, Min(0.01f)] private float growthSpeed = 10.0f;
         [SerializeField, Min(0.01f)] private float maxLength = 10.0f;
-        [SerializeField, Min(0.0f)] private float holdDuration = 2.0f;
+        [SerializeField, Min(0.0f)] private float holdDuration = 4.0f;
         [SerializeField, Min(0.01f)] private float spikeSpacing = 1.2f;
-        [SerializeField] private int damage = 15;
+        [SerializeField] private int damage = 35;
 
         private readonly List<GameObject> spikeInstances = new List<GameObject>();
         private readonly HashSet<IDamageable> damagedTargets = new HashSet<IDamageable>();
