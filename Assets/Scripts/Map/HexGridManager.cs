@@ -15,7 +15,6 @@ public class HexGridManager : MonoBehaviour
     [SerializeField] private int maxRows = 5;
 
     [Header("Generation Constraints")]
-    [SerializeField] private int maxBlockedTiles = 5;
 
     [Header("Spacing")]
     [SerializeField] private float horizontalSpacing = 1.0f;
@@ -28,6 +27,10 @@ public class HexGridManager : MonoBehaviour
 
     void Start()
     {
+        // Unlock cursor and make it visible for clicking tiles
+        Cursor.lockState = CursorLockMode.None;
+        Cursor.visible = true;
+
         GenerateGrid();
     }
 
@@ -69,6 +72,10 @@ public class HexGridManager : MonoBehaviour
         validCoords.Add(new Vector2Int(regularColumns, 0));
     }
 
+    [Header("Generation Constraints")]
+    [SerializeField] private int minBlockedTiles = 2;
+    [SerializeField] private int maxBlockedTiles = 3;
+
     private void GenerateGraphRules()
     {
         // Rule 1: Column 0 is Tutorial
@@ -84,7 +91,7 @@ public class HexGridManager : MonoBehaviour
         // Filter validCoords directly for candidate spots (columns 2 to regularColumns - 1)
         List<Vector2Int> candidates = validCoords.FindAll(c => c.x >= 2 && c.x < regularColumns);
 
-        // Pick 4 distinct random coordinates for the MiniBosses
+        // 1. MiniBosses (4 distinct random tiles)
         int placedMiniBosses = 0;
         while (candidates.Count > 0 && placedMiniBosses < 4)
         {
@@ -94,12 +101,60 @@ public class HexGridManager : MonoBehaviour
             placedMiniBosses++;
         }
 
-        // Fill remaining coordinates with Easy / Hard
+        // 2. Blocked Tiles (2 to 5 random tiles)
+        int blockedCount = Random.Range(minBlockedTiles, maxBlockedTiles + 1);
+        int placedBlocked = 0;
+        while (candidates.Count > 0 && placedBlocked < blockedCount)
+        {
+            int randomIndex = Random.Range(0, candidates.Count);
+            generatedTypes[candidates[randomIndex]] = RoomType.Blocked;
+            candidates.RemoveAt(randomIndex);
+            placedBlocked++;
+        }
+
+        // 3. Teleport Tiles (50% chance to place 2 tiles at opposite ends of a column)
+        if (Random.value < 0.5f)
+        {
+            List<int> candidateCols = new List<int>();
+            for (int col = 2; col < regularColumns; col++)
+            {
+                // Only consider columns that have exactly 5 tiles
+                if (GetRowCount(col) == 5)
+                {
+                    int maxRowIndex = 4; // index 4 corresponds to the 5th tile (rows 0, 1, 2, 3, 4)
+                    Vector2Int bottomTile = new Vector2Int(col, 0);
+                    Vector2Int topTile = new Vector2Int(col, maxRowIndex);
+
+                    // Ensure both top and bottom ends are still free candidate slots
+                    if (candidates.Contains(bottomTile) && candidates.Contains(topTile))
+                    {
+                        candidateCols.Add(col);
+                    }
+                }
+            }
+
+            if (candidateCols.Count > 0)
+            {
+                int chosenCol = candidateCols[Random.Range(0, candidateCols.Count)];
+                int topRow = GetRowCount(chosenCol) - 1; // 4
+
+                Vector2Int bottomCoord = new Vector2Int(chosenCol, 0);
+                Vector2Int topCoord = new Vector2Int(chosenCol, topRow);
+
+                generatedTypes[bottomCoord] = RoomType.Teleport;
+                generatedTypes[topCoord] = RoomType.Teleport;
+
+                candidates.Remove(bottomCoord);
+                candidates.Remove(topCoord);
+            }
+        }
+
+        // 4. Fill remaining coordinates with Easy / Hard
         foreach (var coord in validCoords)
         {
             if (!generatedTypes.ContainsKey(coord))
             {
-                generatedTypes[coord] = (Random.value < 0.45f) ? RoomType.Easy : RoomType.Hard;
+                generatedTypes[coord] = (Random.value < 0.60f) ? RoomType.Easy : RoomType.Hard;
             }
         }
     }
@@ -223,5 +278,41 @@ public class HexGridManager : MonoBehaviour
         {
             DestroyImmediate(transform.GetChild(i).gameObject);
         }
+    }
+
+    public void RefreshNodeStates()
+    {
+        Vector2Int playerCoord = RoomRunData.CurrentNode;
+
+        foreach (var pair in gridNodes)
+        {
+            Vector2Int coord = pair.Key;
+            HexMapNode node = pair.Value;
+            RoomType type = generatedTypes[coord];
+
+            bool isCurrent = (coord == playerCoord);
+            bool isCleared = RoomRunData.VisitedNodes.Contains(coord);
+            bool isSelectable = IsFunnelNeighbor(playerCoord, coord, maxRows, regularColumns);
+
+            node.Setup(coord, type, isSelectable, isCleared, isCurrent);
+        }
+    }
+
+    public Vector2Int GetOppositeTeleportCoord(Vector2Int sourceCoord)
+    {
+        int col = sourceCoord.x;
+        int rowCount = GetRowCount(col);
+
+        // Teleport tiles are placed on opposite ends: row 0 and row (rowCount - 1)
+        int targetRow = (sourceCoord.y == 0) ? (rowCount - 1) : 0;
+        Vector2Int targetCoord = new Vector2Int(col, targetRow);
+
+        // Verify the counterpart is actually a Teleport tile
+        if (generatedTypes.TryGetValue(targetCoord, out RoomType type) && type == RoomType.Teleport)
+        {
+            return targetCoord;
+        }
+
+        return sourceCoord; // Fallback if no matching partner is found
     }
 }

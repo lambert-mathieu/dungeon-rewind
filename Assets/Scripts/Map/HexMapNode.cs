@@ -1,11 +1,17 @@
+using System;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
 [RequireComponent(typeof(Collider2D))]
 public class HexMapNode : MonoBehaviour
 {
+
+    // Production listener: OpenCorridorDoor subscribes to this
+    public static event Action<string> OnRoomNodeSelected;
+
+    [SerializeField] private bool testMode = true;
     [SerializeField] private SpriteRenderer tileRenderer;
-    [SerializeField] private string combatSceneName = "CombatLevelScene";
+    [SerializeField] private string combatSceneName = "EnemyRoom";
 
     public RoomType roomType;
     public Vector2Int gridCoord;
@@ -30,6 +36,7 @@ public class HexMapNode : MonoBehaviour
             case RoomType.Hard:     baseColor = new Color(0.95f, 0.5f, 0.15f); break; // Orange
             case RoomType.MiniBoss: baseColor = new Color(0.65f, 0.25f, 0.85f); break; // Purple
             case RoomType.Boss:     baseColor = new Color(0.9f, 0.15f, 0.15f); break; // Red
+            case RoomType.Teleport: baseColor = new Color(0f, 0f, 0f); break;
         }
 
         UpdateVisuals(isCleared, isCurrent);
@@ -38,28 +45,73 @@ public class HexMapNode : MonoBehaviour
     private void UpdateVisuals(bool isCleared, bool isCurrent)
     {
         if (isCurrent)
-            tileRenderer.color = Color.cyan;
-        else if (isCleared)
-            tileRenderer.color = new Color(0.3f, 0.3f, 0.3f, 0.8f);
-        else if (isSelectable)
+        {
             tileRenderer.color = baseColor;
+        }
+        else if (isCleared)
+        {
+            // Compute luminance to get true grayscale value
+            float gray = (baseColor.r * 0.3f) + (baseColor.g * 0.59f) + (baseColor.b * 0.11f);
+            Color desaturated = new Color(gray, gray, gray, 1f);
+
+            // Blend 40% of the original color with 60% gray, then dim brightness to 45%
+            Color dimmedColor = Color.Lerp(baseColor, desaturated, 0.6f) * 0.45f;
+            dimmedColor.a = 0.85f;
+
+            tileRenderer.color = dimmedColor;
+        }
+        else if (isSelectable)
+        {
+            // Active, selectable tile in full vivid color
+            tileRenderer.color = baseColor;
+        }
         else
-            tileRenderer.color = new Color(baseColor.r * 0.4f, baseColor.g * 0.4f, baseColor.b * 0.4f, 0.35f);
+        {
+            // Future unreached nodes: deeply dimmed and translucent
+            tileRenderer.color = new Color(baseColor.r * 0.25f, baseColor.g * 0.25f, baseColor.b * 0.25f, 0.35f);
+        }
     }
 
     void OnMouseDown()
     {
         if (!isSelectable) return;
 
-        // 1. Commit room payload to the shared static data
-        RoomRunData.SelectRoom(gridCoord, roomType);
+        HexGridManager manager = GetComponentInParent<HexGridManager>();
+        Vector2Int finalCoord = gridCoord;
 
-        Debug.Log($"[Room Dispatched] -> Type: {RoomRunData.SelectedRoomType} | Column Depth: {RoomRunData.ColumnDepth} | Coord: {RoomRunData.SelectedNodeCoord}");
+        // Teleport resolution: If tile is Teleport, resolve and warp to opposite partner
+        if (roomType == RoomType.Teleport && manager != null)
+        {
+            finalCoord = manager.GetOppositeTeleportCoord(gridCoord);
+            RoomRunData.VisitedNodes.Add(gridCoord);
+            Debug.Log($"<color=magenta>[Teleport Triggered]</color> Warped from {gridCoord} to {finalCoord}!");
+        }
 
-        // 2. Lock cursor back into gameplay mode and transition
-        Cursor.lockState = CursorLockMode.Locked;
-        Cursor.visible = false;
+        // 1. Commit chosen tile to persistent data
+        RoomRunData.SelectRoom(finalCoord, roomType);
 
-        SceneManager.LoadScene(combatSceneName);
+        string nextRoomName = roomType.ToString();
+        Debug.Log($"<color=cyan>[Tile Clicked]</color> Selected: <b>{nextRoomName}</b> at {finalCoord} | Depth: {RoomRunData.ColumnDepth}");
+
+        // 2. Refresh visual node states immediately on the grid
+        if (manager != null)
+        {
+            manager.RefreshNodeStates();
+        }
+
+        // 3. Handle Production vs Test execution
+        if (testMode)
+        {
+            // Keep cursor active and free to click further tiles
+            Cursor.lockState = CursorLockMode.None;
+            Cursor.visible = true;
+        }
+        else
+        {
+            // Production: hide cursor, notify OpenCorridorDoor, and unload map
+            Cursor.lockState = CursorLockMode.Locked;
+            Cursor.visible = false;
+            OnRoomNodeSelected?.Invoke(nextRoomName);
+        }
     }
 }
