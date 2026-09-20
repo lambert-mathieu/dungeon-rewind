@@ -12,10 +12,9 @@ public class OpenCorridorDoor : MonoBehaviour
     [SerializeField] private PlayerData playerData;
     [SerializeField] private DungeonData dungeonData;
     [SerializeField] private Transform currentExit;
-    [NonSerialized] CameraRefs cameraRefs = null;
+    CameraRefs cameraRefs = null;
 
-    public SelectedRoom selectedRoom;
-
+    private bool isMapOpen = false;
 
     private float minDistance = 5f;
     private bool isLoadingRoom = false;
@@ -138,24 +137,24 @@ public class OpenCorridorDoor : MonoBehaviour
         isLoadingRoom = false;
     }
 
-    void OpenDoor()
-    {
-         // Call in graph
-        if (!string.IsNullOrEmpty(selectedRoom.roomName))
-        {
-            Debug.Log("Room name: " + selectedRoom.roomName);
-            LoadNextRoom(selectedRoom.roomName);
+    // void OpenDoor()
+    // {
+    //      // Call in graph
+    //     if (!string.IsNullOrEmpty(selectedRoom.roomName))
+    //     {
+    //         Debug.Log("Room name: " + selectedRoom.roomName);
+    //         LoadNextRoom(selectedRoom.roomName);
 
-            exitDoor.transform.localPosition = new Vector3(-7.65f, 6f, 0);
-            entranceDoor.transform.localPosition = new Vector3(7.39f, 2.54f, 0);
+    //         exitDoor.transform.localPosition = new Vector3(-7.65f, 6f, 0);
+    //         entranceDoor.transform.localPosition = new Vector3(7.39f, 2.54f, 0);
 
-        }
+    //     }
 
-        else
-        {
-            Debug.Log("Room name was empty");
-        }
-    }
+    //     else
+    //     {
+    //         Debug.Log("Room name was empty");
+    //     }
+    // }
 
     void Start()
     {
@@ -196,6 +195,5 @@ public class OpenCorridorDoor : MonoBehaviour
             cameraRefs.armCamera.gameObject.SetActive(false);
             cameraRefs.graphCamera.gameObject.SetActive(true);
         }
-       
     }
 }
