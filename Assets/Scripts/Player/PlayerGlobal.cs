@@ -1,6 +1,7 @@
 using System;
 using DungeonRewind.Combat;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class PlayerState : IDamageable {
     public int MaxHealth { get; private set; }
@@ -24,6 +25,7 @@ public class PlayerGlobal : MonoBehaviour, IDamageable {
     public static event Action PlayerDamaged;
 
     private const int maxHealth = 50;
+    private const string mainMenuSceneName = "MainMenu";
 
     private void OnEnable() {
         Instance = this;
@@ -49,5 +51,9 @@ public class PlayerGlobal : MonoBehaviour, IDamageable {
     public void TakeDamage(int amount, bool causedByRewindMagic) {
         State.TakeDamage(amount, causedByRewindMagic);
         PlayerDamaged?.Invoke();
+
+        if (State.CurrentHealth <= 0) {
+            SceneManager.LoadScene(mainMenuSceneName);
+        }
     }
 }

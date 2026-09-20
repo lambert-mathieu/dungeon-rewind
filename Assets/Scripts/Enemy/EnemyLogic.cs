@@ -33,6 +33,7 @@ namespace DungeonRewind.Enemy {
         private int currentHealth;
         private Rigidbody rb;
         private SpriteRenderer[] spriteRenderers;
+        private Color[] originalSpriteColors;
         private Coroutine damageFlashRoutine;
         private EnemyState currentState;
         private float stateTimer;
@@ -45,6 +46,10 @@ namespace DungeonRewind.Enemy {
             currentHealth = MaxHealth;
             TryGetComponent(out rb);
             spriteRenderers = GetComponentsInChildren<SpriteRenderer>(true);
+            originalSpriteColors = new Color[spriteRenderers.Length];
+            for (int i = 0; i < spriteRenderers.Length; i++) {
+                originalSpriteColors[i] = spriteRenderers[i].color;
+            }
             rb.isKinematic = false;
             rb.constraints = RigidbodyConstraints.FreezeRotation;
             rb.interpolation = RigidbodyInterpolation.Interpolate;
@@ -234,11 +239,11 @@ namespace DungeonRewind.Enemy {
         private IEnumerator DamageFlashRoutine(Color damageColor) {
             SetSpriteColor(damageColor);
             yield return new WaitForSeconds(damageFlashDuration);
-            SetSpriteColor(Color.white);
+            RestoreSpriteColors();
             yield return new WaitForSeconds(damageFlashDuration);
             SetSpriteColor(damageColor);
             yield return new WaitForSeconds(damageFlashDuration);
-            SetSpriteColor(Color.white);
+            RestoreSpriteColors();
             damageFlashRoutine = null;
         }
 
@@ -252,6 +257,12 @@ namespace DungeonRewind.Enemy {
         private void SetSpriteColor(Color color) {
             foreach (SpriteRenderer spriteRenderer in spriteRenderers) {
                 spriteRenderer.color = color;
+            }
+        }
+
+        private void RestoreSpriteColors() {
+            for (int i = 0; i < spriteRenderers.Length; i++) {
+                spriteRenderers[i].color = originalSpriteColors[i];
             }
         }
 

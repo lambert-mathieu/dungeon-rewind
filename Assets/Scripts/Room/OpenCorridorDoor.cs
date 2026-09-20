@@ -131,6 +131,9 @@ public class OpenCorridorDoor : MonoBehaviour
         dungeonData.SetCurrentRoom(newScene);
 
         isLoadingRoom = false;
+
+        Cursor.lockState = CursorLockMode.Locked;
+        Cursor.visible = false;
     }
 
     public void OpenDoor(string selectedRoom)
