@@ -67,7 +67,7 @@ public class CloseRoom : MonoBehaviour
 
     private void CloseDoor()
     {
-        door.transform.localPosition = new Vector3(0f, 2.88f, 19.96f);;
+        door.transform.localPosition -= new Vector3(0f, 3f, 0f);;
 
         isClosed = true;
 

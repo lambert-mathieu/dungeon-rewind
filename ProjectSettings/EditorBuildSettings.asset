@@ -20,8 +20,12 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/Scenes/LevelMapScene.unity
     guid: a93aed0bf83b8c24f9a30fc4997f9e69
-    path: Assets/Scenes/MainMenu.unity
-    guid: ff1989c12c72eba468f0cc25265c4582
+  - enabled: 1
+    path: Assets/Scenes/EnemyRoom2.unity
+    guid: 5c1a96bfcf18f484bba4d147793640eb
+  - enabled: 1
+    path: Assets/Scenes/EnemyRoom3.unity
+    guid: 390b0b589853ec64ba9a27c19eae230d
   m_configObjects:
     com.unity.input.settings.actions: {fileID: -944628639613478452, guid: 052faaac586de48259a63d0c4782560b, type: 3}
   m_UseUCBPForAssetBundles: 0
