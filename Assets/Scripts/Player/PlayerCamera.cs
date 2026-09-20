@@ -11,6 +11,8 @@ namespace DungeonRewind.Player {
         [SerializeField] private Camera armCamera;
         [SerializeField] private FirstPersonController firstPersonController;
         [SerializeField] private Transform arms;
+        [SerializeField] private Transform leftArm;
+        [SerializeField] private Transform rightArm;
         private const float referenceLowSpeed = 8.0f;
         private const float referenceHighSpeed = 20.0f;
         private const float directionFullBoostAngle = 40.0f;
@@ -33,6 +35,9 @@ namespace DungeonRewind.Player {
         private const float swayFrequencyIncreaseSpeed = 2.0f;
         private const float swayFrequencyDecreaseSpeed = 2.0f;
         private const float airborneHandSwayMultiplier = 0.6f;
+        private const float airborneHandSpreadOffset = 0.10f;
+        private const float airborneHandSpreadIncreaseSpeed = 2.0f;
+        private const float airborneHandSpreadDecreaseSpeed = 2.0f;
 
         private const float verticalSwayStiffness = 81.0f;
         private const float verticalSwayDamping = 18.0f;
@@ -47,9 +52,12 @@ namespace DungeonRewind.Player {
         private float pitch;
         private float baseFieldOfView;
         private Vector3 armsBaseLocalPosition;
+        private Vector3 leftArmBaseLocalPosition;
+        private Vector3 rightArmBaseLocalPosition;
         private float handSwayPhase;
         private float currentHandSwayAmplitude;
         private float currentHandSwayFrequency;
+        private float currentAirborneHandSpread;
         private bool hasGroundStateBaseline;
         private bool wasGroundedLastFrame;
         private float verticalSwayOffset;
@@ -58,6 +66,8 @@ namespace DungeonRewind.Player {
         private void Awake() {
             baseFieldOfView = armCamera.fieldOfView;
             armsBaseLocalPosition = arms.localPosition;
+            leftArmBaseLocalPosition = leftArm.localPosition;
+            rightArmBaseLocalPosition = rightArm.localPosition;
         }
 
         private void Start() {
@@ -147,6 +157,10 @@ namespace DungeonRewind.Player {
                 targetFrequency *= airborneHandSwayMultiplier;
             }
 
+            float targetAirborneHandSpread = firstPersonController.IsGrounded ? 0f : airborneHandSpreadOffset;
+            float spreadTransitionSpeed = targetAirborneHandSpread > currentAirborneHandSpread ? airborneHandSpreadIncreaseSpeed : airborneHandSpreadDecreaseSpeed;
+            currentAirborneHandSpread = Mathf.MoveTowards(currentAirborneHandSpread, targetAirborneHandSpread, spreadTransitionSpeed * deltaTime);
+
             float amplitudeTransitionSpeed = targetAmplitude > currentHandSwayAmplitude ? swayMagnitudeIncreaseSpeed : swayMagnitudeDecreaseSpeed;
             float frequencyTransitionSpeed = targetFrequency > currentHandSwayFrequency ? swayFrequencyIncreaseSpeed : swayFrequencyDecreaseSpeed;
 
@@ -158,7 +172,9 @@ namespace DungeonRewind.Player {
             float horizontalOffset = Mathf.Sin(handSwayPhase) * currentHandSwayAmplitude;
             float verticalOffset = Mathf.Sin(handSwayPhase * 2f) * currentHandSwayAmplitude * 0.5f;
 
-            arms.localPosition = armsBaseLocalPosition + new Vector3(horizontalOffset, verticalOffset + verticalSwayOffset, 0f);
+            arms.localPosition = armsBaseLocalPosition + new Vector3(0f, verticalSwayOffset, 0f);
+            leftArm.localPosition = leftArmBaseLocalPosition + new Vector3(-horizontalOffset - currentAirborneHandSpread, -verticalOffset, 0f);
+            rightArm.localPosition = rightArmBaseLocalPosition + new Vector3(horizontalOffset + currentAirborneHandSpread, verticalOffset, 0f);
         }
 
         private void DetectJumpAndLandingEvents() {
