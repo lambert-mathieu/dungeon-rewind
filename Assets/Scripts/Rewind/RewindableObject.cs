@@ -1,16 +1,16 @@
-using NUnit.Framework;
 using UnityEngine;
+using UnityEngine.Assertions;
 
 namespace DungeonRewind.Rewind
 {
     public class RewindableObject : MonoBehaviour
     {
         // [SerializeField] 
-        private float baseRewindSpeed = 0f;
+        private float baseRewindSpeed = 0.2f;
         // [SerializeField]
          private float baseRewindAcceleration = 0.5f;
         // [SerializeField]
-        private float rewindJerk = 2.5f;
+        private float rewindJerk = 2f;
         // [SerializeField]
          private float maxRewindSpeed = 10.0f;
 
@@ -21,6 +21,8 @@ namespace DungeonRewind.Rewind
         private float rewindAcceleration;
         private float rewindTime;
         private bool isRewinding;
+
+        private float timelineTime;
 
         public bool IsRewinding => isRewinding;
 
@@ -34,13 +36,13 @@ namespace DungeonRewind.Rewind
         {
             Assert.IsFalse(isRewinding);
             isRewinding = true;
-            rewindTime = Time.time;
+            rewindTime = timelineTime;
             rewindSpeed = baseRewindSpeed;
             rewindAcceleration = baseRewindAcceleration;
 
             foreach (IRewindable rec in recorders)
             {
-                rec.OnRewindBegin();
+                rec.OnRewindBegin(timelineTime);
             }
             foreach(IRewindSuspendable sus in suspendables)
             {
@@ -59,6 +61,7 @@ namespace DungeonRewind.Rewind
                 rec.OnRewindEnd();
             }
             isRewinding = false;
+            timelineTime = rewindTime;
         }
 
         private void Update()
@@ -75,9 +78,10 @@ namespace DungeonRewind.Rewind
             }
             else
             {
+                timelineTime += Time.deltaTime;
                 foreach(IRewindable rec in recorders)
                 {
-                   rec.RecordTick(Time.time);
+                   rec.RecordTick(timelineTime);
                 }
             }
         }

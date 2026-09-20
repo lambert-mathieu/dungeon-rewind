@@ -4,7 +4,7 @@ namespace DungeonRewind.Rewind
     {
         void RecordTick(float time);
         void RewindTo(float time);
-        void OnRewindBegin();
+        void OnRewindBegin(float time);
         void OnRewindEnd();
     }
 

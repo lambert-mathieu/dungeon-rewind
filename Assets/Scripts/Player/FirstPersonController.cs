@@ -1,9 +1,10 @@
+using DungeonRewind.Rewind;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
 namespace DungeonRewind.Player {
     [RequireComponent(typeof(Rigidbody))]
-    public class FirstPersonController : MonoBehaviour {
+    public class FirstPersonController : RewindRecorder<PlayerControllerState>, IRewindSuspendable {
         private const float groundSpeed = 10.0f;
         private const float crouchSpeed = 7.0f;
         private const float groundAcceleration = 180.0f;
@@ -62,56 +63,58 @@ namespace DungeonRewind.Player {
         [SerializeField] private Transform groundCheck;
 
         private Rigidbody rb;
-        private LayerMask groundCheckMask;
+        private PlayerControllerState state;
+        private bool isSuspended;
+
         private Vector2 moveInput;
         private Vector2 lookInput;
-        private Vector3 horizontalVelocity;
-        private float verticalVelocity;
-
         private bool isCrouchPressed;
         private bool isJumpHeld;
         private bool jumpPressedThisFrame;
         private bool jumpReleasedThisFrame;
         private bool crouchPressedThisFrame;
         private bool crouchInputSuppressed;
-        private bool effectiveCrouchPressed;
 
-        private bool isGrounded;
-        private float crouchProgression;
-        private float currentSpeed;
-        private float timeSinceGrounded = 99f;
-        private float coyoteTimer = 99f;
-        private float lastJumpPressedTime = 99f;
-        private float lastJumpTime = 99f;
-        private float lastJumpApexTime = 99f;
-        private float lastCrouchPressedTime = 99f;
-        private bool isSliding;
-        private float slideProgression;
-        private float slideTimer;
-        private float timeSinceSlideZero = 99f;
-        private bool slideDurationEndedThisFrame;
-        private bool isJumping;
-        private bool isJumpSustainReleased;
-        private float currentJumpVelocitySustain;
-
-        private void Awake() {
+        protected override void Initialize() {
             rb = GetComponent<Rigidbody>();
             rb.freezeRotation = true;
             rb.interpolation = RigidbodyInterpolation.Interpolate;
             rb.collisionDetectionMode = CollisionDetectionMode.ContinuousDynamic;
             rb.useGravity = false;
-            groundCheckMask = ~(1 << gameObject.layer);
 
             playerScale.localScale = Vector3.one;
 
-            currentSpeed = groundSpeed;
+            state = PlayerControllerState.CreateInitial(~(1 << gameObject.layer), groundSpeed);
+        }
+
+        protected override PlayerControllerState Capture() => state;
+
+        protected override void Apply(PlayerControllerState snapshot) {
+            state = snapshot;
+        }
+
+        public void SuspendForRewind() {
+            isSuspended = true;
+        }
+
+        public void ResumeAfterRewind() {
+            isSuspended = false;
+            ConsumeFrameInputFlags();
         }
 
         private void Update() {
+            if (isSuspended) {
+                return;
+            }
+
             ApplyLook();
         }
 
         private void FixedUpdate() {
+            if (isSuspended) {
+                return;
+            }
+
             float deltaTime = Time.fixedDeltaTime;
             bool hasMoveInput = moveInput.sqrMagnitude > 0.0001f;
             Vector3 inputDirection = (transform.right * moveInput.x + transform.forward * moveInput.y).normalized;
@@ -122,6 +125,7 @@ namespace DungeonRewind.Player {
             ApplyVerticalMovement(deltaTime);
             ApplyHorizontalMovement(deltaTime, inputDirection, hasMoveInput);
             ApplyMotion();
+            state.SlideDurationEndedThisFrame = false;
             ConsumeFrameInputFlags();
         }
 
@@ -148,7 +152,7 @@ namespace DungeonRewind.Player {
 
                 Vector3 origin = groundCheck.position + offset + Vector3.up * groundCheckSkin;
 
-                if (!Physics.Raycast(origin, Vector3.down, out RaycastHit hit, groundCheckSkin * 2f, groundCheckMask, QueryTriggerInteraction.Ignore)) {
+                if (!Physics.Raycast(origin, Vector3.down, out RaycastHit hit, groundCheckSkin * 2f, state.GroundCheckMask, QueryTriggerInteraction.Ignore)) {
                     continue;
                 }
 
@@ -166,185 +170,184 @@ namespace DungeonRewind.Player {
         }
 
         private void UpdateTimers(float deltaTime) {
-            isGrounded = GroundCheck(out _);
+            state.IsGrounded = GroundCheck(out _);
 
-            lastJumpTime += deltaTime;
+            state.LastJumpTime += deltaTime;
 
-            if (isGrounded || isJumping) {
-                lastJumpApexTime = 99f;
+            if (state.IsGrounded || state.IsJumping) {
+                state.LastJumpApexTime = 99f;
             } else {
-                lastJumpApexTime += deltaTime;
+                state.LastJumpApexTime += deltaTime;
             }
 
-            if (isGrounded) {
-                timeSinceGrounded = 0f;
-                coyoteTimer = 0f;
+            if (state.IsGrounded) {
+                state.TimeSinceGrounded = 0f;
+                state.CoyoteTimer = 0f;
             } else {
-                timeSinceGrounded += deltaTime;
-                coyoteTimer += deltaTime;
+                state.TimeSinceGrounded += deltaTime;
+                state.CoyoteTimer += deltaTime;
             }
 
             if (jumpPressedThisFrame) {
-                lastJumpPressedTime = 0f;
+                state.LastJumpPressedTime = 0f;
             } else {
-                lastJumpPressedTime += deltaTime;
+                state.LastJumpPressedTime += deltaTime;
             }
 
             if (crouchPressedThisFrame) {
-                lastCrouchPressedTime = 0f;
+                state.LastCrouchPressedTime = 0f;
             } else {
-                lastCrouchPressedTime += deltaTime;
+                state.LastCrouchPressedTime += deltaTime;
             }
 
-            effectiveCrouchPressed = isCrouchPressed && !crouchInputSuppressed;
+            state.EffectiveCrouchPressed = isCrouchPressed && !crouchInputSuppressed;
         }
 
         private void ApplySlide(float deltaTime, Vector3 inputDirection, bool hasMoveInput) {
             bool isForwardPressed = moveInput.y > 0f;
 
-            if (isSliding) {
-                slideTimer += deltaTime;
+            if (state.IsSliding) {
+                state.SlideTimer += deltaTime;
 
-                if (slideTimer >= slideDuration) {
-                    isSliding = false;
-                    slideDurationEndedThisFrame = true;
-                } else if (!effectiveCrouchPressed || !isForwardPressed) {
-                    isSliding = false;
+                if (state.SlideTimer >= slideDuration) {
+                    state.IsSliding = false;
+                    state.SlideDurationEndedThisFrame = true;
+                } else if (!state.EffectiveCrouchPressed || !isForwardPressed) {
+                    state.IsSliding = false;
                 }
             } else {
-                bool crouchTriggerBuffered = isGrounded && lastCrouchPressedTime <= slideBufferTime;
-                bool velocityAlignedWithInput = hasMoveInput && Vector3.Dot(inputDirection, horizontalVelocity) > 0f;
-                bool canStartSlide = crouchTriggerBuffered && velocityAlignedWithInput && isForwardPressed && timeSinceSlideZero >= slideMinZeroTime;
+                bool crouchTriggerBuffered = state.IsGrounded && state.LastCrouchPressedTime <= slideBufferTime;
+                bool velocityAlignedWithInput = hasMoveInput && Vector3.Dot(inputDirection, state.HorizontalVelocity) > 0f;
+                bool canStartSlide = crouchTriggerBuffered && velocityAlignedWithInput && isForwardPressed && state.TimeSinceSlideZero >= slideMinZeroTime;
 
                 if (canStartSlide) {
-                    isSliding = true;
-                    slideTimer = 0f;
+                    state.IsSliding = true;
+                    state.SlideTimer = 0f;
                 }
             }
 
-            float progressionRate = isSliding ? (isGrounded ? slideDownSpeed : airSlideDownSpeed) : -(isGrounded ? slideUpSpeed : airSlideUpSpeed);
-            slideProgression = Mathf.Clamp01(slideProgression + progressionRate * deltaTime);
+            float progressionRate = state.IsSliding ? (state.IsGrounded ? slideDownSpeed : airSlideDownSpeed) : -(state.IsGrounded ? slideUpSpeed : airSlideUpSpeed);
+            state.SlideProgression = Mathf.Clamp01(state.SlideProgression + progressionRate * deltaTime);
 
-            timeSinceSlideZero = slideProgression <= 0f ? timeSinceSlideZero + deltaTime : 0f;
+            state.TimeSinceSlideZero = state.SlideProgression <= 0f ? state.TimeSinceSlideZero + deltaTime : 0f;
         }
 
         private void ApplyCrouch(float deltaTime) {
-            if (isSliding) {
-                crouchProgression = 0f;
-            } else if (slideDurationEndedThisFrame) {
-                crouchProgression = 1f;
+            if (state.IsSliding) {
+                state.CrouchProgression = 0f;
+            } else if (state.SlideDurationEndedThisFrame) {
+                state.CrouchProgression = 1f;
             } else {
-                float progressionRate = effectiveCrouchPressed ? (isGrounded ? crouchDownSpeed : airCrouchDownSpeed) : -(isGrounded ? crouchUpSpeed : airCrouchUpSpeed);
-                crouchProgression = Mathf.Clamp01(crouchProgression + progressionRate * deltaTime);
+                float progressionRate = state.EffectiveCrouchPressed ? (state.IsGrounded ? crouchDownSpeed : airCrouchDownSpeed) : -(state.IsGrounded ? crouchUpSpeed : airCrouchUpSpeed);
+                state.CrouchProgression = Mathf.Clamp01(state.CrouchProgression + progressionRate * deltaTime);
             }
 
-            float crouchHeight = Mathf.Lerp(1f, crouchHeightScale, crouchProgression);
-            float heightScale = Mathf.Lerp(crouchHeight, slideHeightScale, slideProgression);
+            float crouchHeight = Mathf.Lerp(1f, crouchHeightScale, state.CrouchProgression);
+            float heightScale = Mathf.Lerp(crouchHeight, slideHeightScale, state.SlideProgression);
             float previousGroundCheckHeight = groundCheck.position.y;
 
             Vector3 scale = playerScale.localScale;
             scale.y = heightScale;
             playerScale.localScale = scale;
 
-            if (isGrounded) {
+            if (state.IsGrounded) {
                 rb.position += Vector3.up * (previousGroundCheckHeight - groundCheck.position.y);
             }
         }
 
         private void ApplyVerticalMovement(float deltaTime) {
-            if (!isGrounded) {
-                verticalVelocity += (coyoteTimer <= jumpCoyoteTime ? coyoteGravity : gravity) * deltaTime;
+            if (!state.IsGrounded) {
+                state.VerticalVelocity += (state.CoyoteTimer <= jumpCoyoteTime ? coyoteGravity : gravity) * deltaTime;
             }
 
-            if (lastJumpApexTime <= jumpApexFallBonusTime) {
-                verticalVelocity += jumpApexFallBonusGravity * deltaTime;
+            if (state.LastJumpApexTime <= jumpApexFallBonusTime) {
+                state.VerticalVelocity += jumpApexFallBonusGravity * deltaTime;
             }
 
-            if (isJumping) {
+            if (state.IsJumping) {
                 if (jumpReleasedThisFrame || !isJumpHeld) {
-                    isJumpSustainReleased = true;
+                    state.IsJumpSustainReleased = true;
                 }
 
-                bool shouldEndSustain = (isJumpSustainReleased && lastJumpTime >= jumpMinHoldTime)
-                    || lastJumpTime >= jumpMaxHoldTime
-                    || verticalVelocity <= 1f
-                    || isGrounded;
+                bool shouldEndSustain = (state.IsJumpSustainReleased && state.LastJumpTime >= jumpMinHoldTime)
+                    || state.LastJumpTime >= jumpMaxHoldTime
+                    || state.VerticalVelocity <= 1f
+                    || state.IsGrounded;
 
                 if (shouldEndSustain) {
-                    isJumping = false;
-                    lastJumpApexTime = 0f;
+                    state.IsJumping = false;
+                    state.LastJumpApexTime = 0f;
                 } else {
-                    verticalVelocity += currentJumpVelocitySustain * deltaTime;
+                    state.VerticalVelocity += state.CurrentJumpVelocitySustain * deltaTime;
                 }
             } else {
-                bool canJumpNow = lastJumpTime >= jumpCooldownTime && (
-                    (jumpPressedThisFrame && isGrounded)
-                    || (jumpPressedThisFrame && coyoteTimer <= jumpCoyoteTime)
-                    || (lastJumpPressedTime <= jumpBufferTime && isGrounded)
+                bool canJumpNow = state.LastJumpTime >= jumpCooldownTime && (
+                    (jumpPressedThisFrame && state.IsGrounded)
+                    || (jumpPressedThisFrame && state.CoyoteTimer <= jumpCoyoteTime)
+                    || (state.LastJumpPressedTime <= jumpBufferTime && state.IsGrounded)
                 );
 
                 if (canJumpNow) {
-                    if (isSliding) {
-                        isSliding = false;
+                    if (state.IsSliding) {
+                        state.IsSliding = false;
                         crouchInputSuppressed = true;
                     }
 
-                    float crouchedJumpVelocity = Mathf.Lerp(jumpVelocity, crouchJumpVelocity, crouchProgression);
-                    float crouchedJumpVelocitySustain = Mathf.Lerp(jumpVelocitySustain, crouchJumpVelocitySustain, crouchProgression);
+                    float crouchedJumpVelocity = Mathf.Lerp(jumpVelocity, crouchJumpVelocity, state.CrouchProgression);
+                    float crouchedJumpVelocitySustain = Mathf.Lerp(jumpVelocitySustain, crouchJumpVelocitySustain, state.CrouchProgression);
 
-                    verticalVelocity = Mathf.Lerp(crouchedJumpVelocity, slideJumpVelocity, slideProgression);
-                    currentJumpVelocitySustain = Mathf.Lerp(crouchedJumpVelocitySustain, slideJumpVelocitySustain, slideProgression);
+                    state.VerticalVelocity = Mathf.Lerp(crouchedJumpVelocity, slideJumpVelocity, state.SlideProgression);
+                    state.CurrentJumpVelocitySustain = Mathf.Lerp(crouchedJumpVelocitySustain, slideJumpVelocitySustain, state.SlideProgression);
 
-                    lastJumpPressedTime = 99f;
-                    coyoteTimer = 99f;
-                    lastJumpTime = 0f;
-                    isJumping = true;
-                    isJumpSustainReleased = jumpReleasedThisFrame || !isJumpHeld;
+                    state.LastJumpPressedTime = 99f;
+                    state.CoyoteTimer = 99f;
+                    state.LastJumpTime = 0f;
+                    state.IsJumping = true;
+                    state.IsJumpSustainReleased = jumpReleasedThisFrame || !isJumpHeld;
                 }
             }
 
-            verticalVelocity = Mathf.Clamp(verticalVelocity, -maxFallSpeed, maxFallSpeed);
+            state.VerticalVelocity = Mathf.Clamp(state.VerticalVelocity, -maxFallSpeed, maxFallSpeed);
         }
 
         private void ApplyHorizontalMovement(float deltaTime, Vector3 inputDirection, bool hasMoveInput) {
-            if (isGrounded) {
-                float crouchedSpeed = Mathf.Lerp(groundSpeed, crouchSpeed, crouchProgression);
-                currentSpeed = Mathf.Lerp(crouchedSpeed, slideSpeed, slideProgression);
-            } else if (timeSinceGrounded >= speedTransitionTime && currentSpeed < groundSpeed) {
-                currentSpeed = Mathf.Min(currentSpeed + speedTransitionSpeed * deltaTime, groundSpeed);
+            if (state.IsGrounded) {
+                float crouchedSpeed = Mathf.Lerp(groundSpeed, crouchSpeed, state.CrouchProgression);
+                state.CurrentSpeed = Mathf.Lerp(crouchedSpeed, slideSpeed, state.SlideProgression);
+            } else if (state.TimeSinceGrounded >= speedTransitionTime && state.CurrentSpeed < groundSpeed) {
+                state.CurrentSpeed = Mathf.Min(state.CurrentSpeed + speedTransitionSpeed * deltaTime, groundSpeed);
             }
 
             float baseAcceleration = hasMoveInput
-                ? (isGrounded ? Mathf.Lerp(groundAcceleration, crouchAcceleration, crouchProgression) : airAcceleration)
-                : (isGrounded ? Mathf.Lerp(groundDeceleration, crouchDeceleration, crouchProgression) : airDeceleration);
+                ? (state.IsGrounded ? Mathf.Lerp(groundAcceleration, crouchAcceleration, state.CrouchProgression) : airAcceleration)
+                : (state.IsGrounded ? Mathf.Lerp(groundDeceleration, crouchDeceleration, state.CrouchProgression) : airDeceleration);
 
-            float acceleration = Mathf.Lerp(baseAcceleration, hasMoveInput ? slideAcceleration : slideDeceleration, slideProgression);
+            float acceleration = Mathf.Lerp(baseAcceleration, hasMoveInput ? slideAcceleration : slideDeceleration, state.SlideProgression);
 
             Vector3 targetDirection = inputDirection;
             if (hasMoveInput) {
                 Vector3 cameraForward = cameraRoot.forward;
                 cameraForward.y = 0f;
                 if (cameraForward.sqrMagnitude > 0.0001f) {
-                    targetDirection = Vector3.Slerp(inputDirection, cameraForward.normalized, 0.5f * slideProgression);
+                    targetDirection = Vector3.Slerp(inputDirection, cameraForward.normalized, 0.5f * state.SlideProgression);
                 }
             }
 
-            Vector3 targetVelocity = targetDirection * currentSpeed;
-            horizontalVelocity = Vector3.MoveTowards(horizontalVelocity, targetVelocity, acceleration * deltaTime);
+            Vector3 targetVelocity = targetDirection * state.CurrentSpeed;
+            state.HorizontalVelocity = Vector3.MoveTowards(state.HorizontalVelocity, targetVelocity, acceleration * deltaTime);
         }
 
         private void ApplyMotion() {
-            rb.linearVelocity = new Vector3(horizontalVelocity.x, verticalVelocity, horizontalVelocity.z);
+            rb.linearVelocity = new Vector3(state.HorizontalVelocity.x, state.VerticalVelocity, state.HorizontalVelocity.z);
         }
 
         private void ConsumeFrameInputFlags() {
             jumpPressedThisFrame = false;
             jumpReleasedThisFrame = false;
             crouchPressedThisFrame = false;
-            slideDurationEndedThisFrame = false;
         }
 
-        public Vector3 HorizontalVelocity => horizontalVelocity;
+        public Vector3 HorizontalVelocity => state.HorizontalVelocity;
 
         public void OnMove(InputValue value) {
             moveInput = Vector2.ClampMagnitude(value.Get<Vector2>(), 1f);

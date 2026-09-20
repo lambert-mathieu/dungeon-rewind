@@ -2,7 +2,7 @@ using UnityEngine;
 
 namespace DungeonRewind.Rewind {
     public abstract class RewindRecorder<TSnapshot> : MonoBehaviour, IRewindable where TSnapshot : struct {
-        [SerializeField, Min(0.1f)] private float historyDuration = 3.0f;
+        private float historyDuration = 5.0f;
         [SerializeField, Min(1.0f)] private float recordRate = 30.0f;
 
         private SnapshotBuffer<TSnapshot> buffer;
@@ -53,9 +53,10 @@ namespace DungeonRewind.Rewind {
             Apply(LastAppliedSnapshot);
         }
 
-        public void OnRewindBegin() {
-            lastSampledTime = buffer.LatestSampleTime();
+        public void OnRewindBegin(float time) {
+            lastSampledTime = time;
             LastAppliedSnapshot = Capture();
+            buffer.Push(lastSampledTime, LastAppliedSnapshot);
             OnRewindBeginInternal();
         }
 
