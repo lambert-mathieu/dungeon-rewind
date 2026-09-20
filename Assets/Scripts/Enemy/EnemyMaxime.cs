@@ -2,14 +2,14 @@ using UnityEngine;
 
 namespace DungeonRewind.Enemy {
     public sealed class EnemyMaxime : EnemyLogic {
-        private const int maxHealth = 30;
+        private const int maxHealth = 100;
         private const float desiredAttackDistance = 7.5f;
-        private const float attackDistanceTolerance = 2.0f;
+        private const float attackDistanceTolerance = 1.0f;
         private const float aggroGetDistance = 30.0f;
         private const float aggroLoseDistance = 150.0f;
         private const float minAttackCooldown = 9.0f;
         private const float maxAttackCooldown = 10.0f;
-        private const float moveSpeed = 4.5f;
+        private const float moveSpeed = 5.5f;
         private const float attackWindupDuration = 0.7f;
         private const float spikeHeight = 2.0f;
         private const float spikeRadius = 0.3f;
