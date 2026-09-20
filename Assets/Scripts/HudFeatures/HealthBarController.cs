@@ -2,7 +2,6 @@ using UnityEngine;
 
 public class HealthBarController : MonoBehaviour
 {
-    public PlayerController player;
     private RectTransform rectTransform;
 
     void Awake()
@@ -10,13 +9,8 @@ public class HealthBarController : MonoBehaviour
         rectTransform = GetComponent<RectTransform>();
     }
 
-    void Start()
-    {
-        
-    }
-
     void Update()
     {
-        rectTransform.SetSizeWithCurrentAnchors(RectTransform.Axis.Horizontal, player.health);
+        rectTransform.SetSizeWithCurrentAnchors(RectTransform.Axis.Horizontal, PlayerGlobal.State.CurrentHealth);
     }
 }

@@ -1,15 +1,50 @@
+using DungeonRewind.Combat;
 using UnityEngine;
 
-public class PlayerGlobal : MonoBehaviour {
+public class PlayerState : IDamageable {
+    public int MaxHealth { get; private set; }
+    public int CurrentHealth { get; private set; }
+
+    public PlayerState(int maxHealth) {
+        MaxHealth = maxHealth;
+        CurrentHealth = maxHealth;
+    }
+
+    public void TakeDamage(int amount) {
+        CurrentHealth = Mathf.Clamp(CurrentHealth - amount, 0, MaxHealth);
+    }
+}
+
+public class PlayerGlobal : MonoBehaviour, IDamageable {
+    public static PlayerGlobal Instance { get; private set; }
     public static Transform PlayerTransform { get; private set; }
+    public static GameObject PlayerObject { get; private set; }
+    public static PlayerState State { get; private set; } = new PlayerState(200);
+
+    private const int maxHealth = 50;
 
     private void OnEnable() {
+        Instance = this;
         PlayerTransform = transform;
+        PlayerObject = gameObject;
+        State = new PlayerState(maxHealth);
     }
 
     private void OnDisable() {
+        if (Instance == this) {
+            Instance = null;
+        }
+
         if (PlayerTransform == transform) {
             PlayerTransform = null;
         }
+
+        if (PlayerObject == gameObject) {
+            PlayerObject = null;
+        }
+    }
+
+    public void TakeDamage(int amount) {
+        State.TakeDamage(amount);
     }
 }

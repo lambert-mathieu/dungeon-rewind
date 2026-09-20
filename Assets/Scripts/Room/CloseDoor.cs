@@ -2,7 +2,6 @@ using UnityEngine;
 
 public class CloseRoom : MonoBehaviour
 {
-    [SerializeField] private PlayerData playerData;
     [SerializeField] private GameObject door;
 
     [Header("Closing")]
@@ -16,14 +15,14 @@ public class CloseRoom : MonoBehaviour
         if (isClosed)
             return;
 
-        if (playerData == null || playerData.playerTransform == null)
+        if (PlayerGlobal.PlayerTransform == null)
             return;
 
         if (door == null)
             return;
 
         Vector3 playerPosition =
-            playerData.playerTransform.position;
+            PlayerGlobal.PlayerTransform.position;
 
         // Convert player position into the door's local space.
         // This means the check still works if the room is rotated.

@@ -9,7 +9,6 @@ public class OpenCorridorDoor : MonoBehaviour
     public GameObject entranceDoor = null;
     public GameObject exitDoor = null;
 
-    [SerializeField] private PlayerData playerData;
     [SerializeField] private DungeonData dungeonData;
     [SerializeField] private Transform currentExit;
     CameraRefs cameraRefs = null;
@@ -184,10 +183,10 @@ public class OpenCorridorDoor : MonoBehaviour
     void Update()
     {
 
-        if (playerData.playerTransform == null)
+        if (PlayerGlobal.PlayerTransform == null)
             return;
 
-        float distancePlayerDoor = Vector3.Distance(playerData.playerTransform.position, exitDoor.transform.position);
+        float distancePlayerDoor = Vector3.Distance(PlayerGlobal.PlayerTransform.position, exitDoor.transform.position);
 
         if (Keyboard.current.eKey.wasPressedThisFrame && distancePlayerDoor <= minDistance)
         {

@@ -6,7 +6,6 @@ public class OpenDoor : MonoBehaviour
 {
     public GameObject door;
 
-    [SerializeField] private PlayerData playerData;
     [SerializeField] private DungeonData dungeonData;
     [SerializeField] private Transform currentExit;
     public Camera playerCamera;
@@ -167,17 +166,17 @@ public class OpenDoor : MonoBehaviour
 
     private void Update()
     {
-        if (playerData.playerTransform == null)
+        if (PlayerGlobal.PlayerTransform == null)
             return;
 
         float distancePlayerDoor =
             Vector3.Distance(
-                playerData.playerTransform.position,
+                PlayerGlobal.PlayerTransform.position,
                 door.transform.position
             );
 
         Debug.DrawLine(
-            playerData.playerTransform.position,
+            PlayerGlobal.PlayerTransform.position,
             door.transform.position
         );
 

@@ -6,7 +6,7 @@ namespace DungeonRewind.Enemy {
         private const int maxHealth = 40;
         private const float desiredAttackDistance = 12.0f;
         private const float attackDistanceTolerance = 2.0f;
-        private const float aggroGetDistance = 15.0f;
+        private const float aggroGetDistance = 20.0f;
         private const float aggroLoseDistance = 150.0f;
         private const float minAttackCooldown = 5.0f;
         private const float maxAttackCooldown = 6.0f;
