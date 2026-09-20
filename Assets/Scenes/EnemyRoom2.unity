@@ -343,6 +343,63 @@ Transform:
   m_Children: []
   m_Father: {fileID: 564760665}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1001 &299295084
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    serializedVersion: 3
+    m_TransformParent: {fileID: 0}
+    m_Modifications:
+    - target: {fileID: 5616086689053066254, guid: 8dd178e0caaba35499f7a84bb74229ff, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 3.320337
+      objectReference: {fileID: 0}
+    - target: {fileID: 5616086689053066254, guid: 8dd178e0caaba35499f7a84bb74229ff, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 2.5
+      objectReference: {fileID: 0}
+    - target: {fileID: 5616086689053066254, guid: 8dd178e0caaba35499f7a84bb74229ff, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 12.581799
+      objectReference: {fileID: 0}
+    - target: {fileID: 5616086689053066254, guid: 8dd178e0caaba35499f7a84bb74229ff, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 5616086689053066254, guid: 8dd178e0caaba35499f7a84bb74229ff, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5616086689053066254, guid: 8dd178e0caaba35499f7a84bb74229ff, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5616086689053066254, guid: 8dd178e0caaba35499f7a84bb74229ff, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5616086689053066254, guid: 8dd178e0caaba35499f7a84bb74229ff, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5616086689053066254, guid: 8dd178e0caaba35499f7a84bb74229ff, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5616086689053066254, guid: 8dd178e0caaba35499f7a84bb74229ff, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8744380059183830488, guid: 8dd178e0caaba35499f7a84bb74229ff, type: 3}
+      propertyPath: m_Name
+      value: EnemyFrank (1)
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: 8dd178e0caaba35499f7a84bb74229ff, type: 3}
 --- !u!1 &343999782
 GameObject:
   m_ObjectHideFlags: 0
@@ -1155,8 +1212,67 @@ Transform:
   m_Children: []
   m_Father: {fileID: 564760665}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1001 &1949770512
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    serializedVersion: 3
+    m_TransformParent: {fileID: 0}
+    m_Modifications:
+    - target: {fileID: 5616086689053066254, guid: 8dd178e0caaba35499f7a84bb74229ff, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: -7.3746104
+      objectReference: {fileID: 0}
+    - target: {fileID: 5616086689053066254, guid: 8dd178e0caaba35499f7a84bb74229ff, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 2.83
+      objectReference: {fileID: 0}
+    - target: {fileID: 5616086689053066254, guid: 8dd178e0caaba35499f7a84bb74229ff, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 18.122852
+      objectReference: {fileID: 0}
+    - target: {fileID: 5616086689053066254, guid: 8dd178e0caaba35499f7a84bb74229ff, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 5616086689053066254, guid: 8dd178e0caaba35499f7a84bb74229ff, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5616086689053066254, guid: 8dd178e0caaba35499f7a84bb74229ff, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5616086689053066254, guid: 8dd178e0caaba35499f7a84bb74229ff, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5616086689053066254, guid: 8dd178e0caaba35499f7a84bb74229ff, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5616086689053066254, guid: 8dd178e0caaba35499f7a84bb74229ff, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5616086689053066254, guid: 8dd178e0caaba35499f7a84bb74229ff, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8744380059183830488, guid: 8dd178e0caaba35499f7a84bb74229ff, type: 3}
+      propertyPath: m_Name
+      value: EnemyFrank
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: 8dd178e0caaba35499f7a84bb74229ff, type: 3}
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
   m_ObjectHideFlags: 0
   m_Roots:
   - {fileID: 564760661}
+  - {fileID: 1949770512}
+  - {fileID: 299295084}
