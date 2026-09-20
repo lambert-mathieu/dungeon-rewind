@@ -165,6 +165,11 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!20 &744008512 stripped
+Camera:
+  m_CorrespondingSourceObject: {fileID: 2287929082254980496, guid: 1e095d3a1c100b748afeec83368b5ae9, type: 3}
+  m_PrefabInstance: {fileID: 1185102455}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &1112714364
 GameObject:
   m_ObjectHideFlags: 0
@@ -209,9 +214,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 474a5f70c8b983042a252abb586cc869, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::CameraRefs
-  playerCamera: {fileID: 1185102457}
-  armCamera: {fileID: 1185102456}
-  graphCamera: {fileID: 1192780976}
+  playerCamera: {fileID: 1710433177}
+  armCamera: {fileID: 744008512}
+  graphCamera: {fileID: 0}
 --- !u!1001 &1185102455
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -499,6 +504,11 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 4294967295
   m_MaxRayIntersections: 0
+--- !u!20 &1710433177 stripped
+Camera:
+  m_CorrespondingSourceObject: {fileID: 1331417635060347387, guid: 1e095d3a1c100b748afeec83368b5ae9, type: 3}
+  m_PrefabInstance: {fileID: 1185102455}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &1822500775 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 3028212873581382549, guid: 1e095d3a1c100b748afeec83368b5ae9, type: 3}
@@ -571,7 +581,7 @@ PrefabInstance:
     - target: {fileID: 2639879820501144939, guid: c8ae1ba5287770443803ad08fa0e4d3f, type: 3}
       propertyPath: armCamera
       value: 
-      objectReference: {fileID: 1185102456}
+      objectReference: {fileID: 0}
     - target: {fileID: 2639879820501144939, guid: c8ae1ba5287770443803ad08fa0e4d3f, type: 3}
       propertyPath: dungeonData
       value: 
@@ -579,11 +589,11 @@ PrefabInstance:
     - target: {fileID: 2639879820501144939, guid: c8ae1ba5287770443803ad08fa0e4d3f, type: 3}
       propertyPath: graphCamera
       value: 
-      objectReference: {fileID: 1192780976}
+      objectReference: {fileID: 0}
     - target: {fileID: 2639879820501144939, guid: c8ae1ba5287770443803ad08fa0e4d3f, type: 3}
       propertyPath: playerCamera
       value: 
-      objectReference: {fileID: 1185102457}
+      objectReference: {fileID: 0}
     - target: {fileID: 2751206486803241716, guid: c8ae1ba5287770443803ad08fa0e4d3f, type: 3}
       propertyPath: 'm_Materials.Array.data[0]'
       value: 
@@ -614,3 +624,4 @@ SceneRoots:
   - {fileID: 178906066}
   - {fileID: 6071755337054707369}
   - {fileID: 1558572527}
+  - {fileID: 1112714365}
