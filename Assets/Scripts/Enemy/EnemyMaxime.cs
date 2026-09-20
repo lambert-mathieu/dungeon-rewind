@@ -3,16 +3,17 @@ using UnityEngine;
 
 namespace DungeonRewind.Enemy {
     public sealed class EnemyMaxime : EnemyLogic {
-        private const int maxHealth = 100;
-        private const float desiredAttackDistance = 7.5f;
-        private const float attackDistanceTolerance = 1.0f;
+        private const int maxHealth = 45;
+        private const float desiredAttackDistanceFar = 17.0f;
+        private const float desiredAttackDistanceNear = 11.0f;
+        private const float attackDistanceTolerance = 0.5f;
         private const float aggroGetDistance = 20.0f;
         private const float aggroLoseDistance = 150.0f;
-        private const float minAttackCooldown = 7.0f;
-        private const float maxAttackCooldown = 8.0f;
-        private const float moveSpeed = 5.5f;
-        private const float attackWindupDuration = 0.3f;
-        private const int spikeDirectionCount = 11;
+        private const float minAttackCooldown = 2.5f;
+        private const float maxAttackCooldown = 7.0f;
+        private const float moveSpeed = 7.9f;
+        private const float attackWindupDuration = 0.7f;
+        private const int spikeDirectionCount = 5;
         private const float spikeGapFromEnemy = 2.5f;
         private const float spikeClearanceDelay = 0.1f;
 
@@ -20,9 +21,10 @@ namespace DungeonRewind.Enemy {
 
         private readonly List<GroundSpike> activeSpikes = new List<GroundSpike>();
         private Collider ownerCollider;
+        private float currentDesiredAttackDistance = desiredAttackDistanceFar;
 
         protected override int MaxHealth => maxHealth;
-        protected override float DesiredAttackDistance => desiredAttackDistance;
+        protected override float DesiredAttackDistance => currentDesiredAttackDistance;
         protected override float AttackDistanceTolerance => attackDistanceTolerance;
         protected override float AggroGetDistance => aggroGetDistance;
         protected override float AggroLoseDistance => aggroLoseDistance;
@@ -53,6 +55,8 @@ namespace DungeonRewind.Enemy {
                 spike.Launch(transform, DespawnActiveSpikes);
                 activeSpikes.Add(spike);
             }
+
+            currentDesiredAttackDistance = currentDesiredAttackDistance == desiredAttackDistanceFar ? desiredAttackDistanceNear : desiredAttackDistanceFar;
         }
 
         private void DespawnActiveSpikes() {
