@@ -36,14 +36,14 @@ namespace DungeonRewind.Enemy {
         }
 
         private void Update() {
-            if (InitPlayer.Data == null || InitPlayer.Data.playerTransform == null) {
+            if (PlayerGlobal.PlayerTransform == null) {
                 if (currentState != EnemyState.Idle) {
                     EnterState(EnemyState.Idle);
                 }
                 return;
             }
 
-            float distanceToPlayer = Vector3.Distance(transform.position, InitPlayer.Data.playerTransform.position);
+            float distanceToPlayer = Vector3.Distance(transform.position, PlayerGlobal.PlayerTransform.position);
 
             switch (currentState) {
                 case EnemyState.Idle:
@@ -86,11 +86,11 @@ namespace DungeonRewind.Enemy {
         }
 
         private void FixedUpdate() {
-            if (currentState != EnemyState.Move || InitPlayer.Data == null || InitPlayer.Data.playerTransform == null) {
+            if (currentState != EnemyState.Move || PlayerGlobal.PlayerTransform == null) {
                 return;
             }
 
-            Vector3 targetPosition = InitPlayer.Data.playerTransform.position;
+            Vector3 targetPosition = PlayerGlobal.PlayerTransform.position;
             targetPosition.y = rb.position.y;
 
             Vector3 newPosition = Vector3.MoveTowards(rb.position, targetPosition, moveSpeed * Time.fixedDeltaTime);
@@ -98,11 +98,11 @@ namespace DungeonRewind.Enemy {
         }
 
         private void LateUpdate() {
-            if (InitPlayer.Data == null || InitPlayer.Data.playerTransform == null || enemyVisual == null) {
+            if (PlayerGlobal.PlayerTransform == null || enemyVisual == null) {
                 return;
             }
 
-            Vector3 direction = enemyVisual.position - InitPlayer.Data.playerTransform.position;
+            Vector3 direction = enemyVisual.position - PlayerGlobal.PlayerTransform.position;
             direction.y = 0f;
 
             if (direction.sqrMagnitude < 0.0001f) {
@@ -157,7 +157,7 @@ namespace DungeonRewind.Enemy {
 
         private void ThrowFireball() {
             Vector3 spawnPosition = transform.position + Vector3.up * fireballSpawnHeight;
-            Vector3 directionToPlayer = (InitPlayer.Data.playerTransform.position - spawnPosition).normalized;
+            Vector3 directionToPlayer = (PlayerGlobal.PlayerTransform.position - spawnPosition).normalized;
 
             GameObject fireball = GameObject.CreatePrimitive(PrimitiveType.Sphere);
             fireball.name = "Fireball";
