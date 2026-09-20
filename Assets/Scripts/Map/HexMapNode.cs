@@ -9,7 +9,7 @@ public class HexMapNode : MonoBehaviour
     // Production listener: OpenCorridorDoor subscribes to this
     public static event Action<string> OnRoomNodeSelected;
 
-    [SerializeField] private bool testMode = true;
+    [SerializeField] private bool testMode = false;
     [SerializeField] private SpriteRenderer tileRenderer;
     [SerializeField] private string combatSceneName = "EnemyRoom";
 
@@ -74,6 +74,8 @@ public class HexMapNode : MonoBehaviour
 
     void OnMouseDown()
     {
+
+        Debug.Log("I RUN MOUSE DOWN");
         if (!isSelectable) return;
 
         HexGridManager manager = GetComponentInParent<HexGridManager>();

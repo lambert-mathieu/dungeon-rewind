@@ -1,24 +1,57 @@
+using System.Collections;
 using UnityEngine;
 using UnityEngine.UI;
 
 public class StaminaWheelController : MonoBehaviour
 {
-    [Header("References")]
-    public PlayerController player;
     [SerializeField] private Image fillImage;
+    [SerializeField] private CanvasGroup canvasGroup;
+    [SerializeField] private float drainDuration = 1.5f;
 
-    [Header("Visual Feedback")]
-    [SerializeField] private Color normalColor = new Color(0.15f, 0.75f, 0.95f, 1f);
-    [SerializeField] private Color exhaustedColor = new Color(0.9f, 0.2f, 0.2f, 1f);
+    private Coroutine drainRoutine;
 
-    void Update()
+    private void Awake()
     {
-        if (player == null || fillImage == null) return;
+        if (canvasGroup == null)
+            canvasGroup = GetComponent<CanvasGroup>();
 
-        // Update radial fill amount (0.0 to 1.0)
-        fillImage.fillAmount = player.MaxStamina > 0f ? (player.CurrentStamina / player.MaxStamina) : 0f;
+        // Hidden by default
+        if (canvasGroup != null)
+            canvasGroup.alpha = 0f;
+    }
 
-        // Visual warning: red when locked out/cooling down, cyan/blue when usable
-        fillImage.color = player.IsExhausted ? exhaustedColor : normalColor;
+    /// <summary>
+    /// Call this from a UI Button's OnClick() event.
+    /// </summary>
+    public void DepleteStamina()
+    {
+        if (drainRoutine != null)
+            StopCoroutine(drainRoutine);
+
+        drainRoutine = StartCoroutine(DrainRoutine());
+    }
+
+    private IEnumerator DrainRoutine()
+    {
+        // Show wheel and reset fill to full
+        if (canvasGroup != null) canvasGroup.alpha = 1f;
+        if (fillImage != null) fillImage.fillAmount = 1f;
+
+        float elapsed = 0f;
+
+        while (elapsed < drainDuration)
+        {
+            elapsed += Time.deltaTime;
+            if (fillImage != null)
+            {
+                fillImage.fillAmount = Mathf.Lerp(1f, 0f, elapsed / drainDuration);
+            }
+            yield return null;
+        }
+
+        if (fillImage != null) fillImage.fillAmount = 0f;
+
+        // Hide wheel when depleted
+        if (canvasGroup != null) canvasGroup.alpha = 0f;
     }
 }
