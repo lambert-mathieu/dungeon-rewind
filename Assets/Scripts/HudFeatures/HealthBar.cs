@@ -4,39 +4,20 @@ using UnityEngine.UI;
 public class HealthBar : MonoBehaviour
 {
     [SerializeField] private Image fillImage;
-    [SerializeField] private float maxHealth = 100f;
 
-    private float currentHealth;
-
-    private void Awake()
+    private void Update()
     {
-        currentHealth = maxHealth;
         UpdateVisuals();
     }
 
-    /// <summary>
-    /// Deducts damage and updates the bar. Can be wired directly to a UI Button.
-    /// </summary>
-    public void TakeDamage(float amount)
+    public void UpdateVisuals()
     {
-        currentHealth = Mathf.Clamp(currentHealth - amount, 0f, maxHealth);
-        UpdateVisuals();
-    }
+        if (fillImage == null || PlayerGlobal.State == null) return;
 
-    /// <summary>
-    /// Restores health up to maxHealth.
-    /// </summary>
-    public void Heal(float amount)
-    {
-        currentHealth = Mathf.Clamp(currentHealth + amount, 0f, maxHealth);
-        UpdateVisuals();
-    }
-
-    private void UpdateVisuals()
-    {
-        if (fillImage != null && maxHealth > 0f)
+        float max = PlayerGlobal.State.MaxHealth;
+        if (max > 0f)
         {
-            fillImage.fillAmount = currentHealth / maxHealth;
+            fillImage.fillAmount = (float)PlayerGlobal.State.CurrentHealth / max;
         }
     }
 }
