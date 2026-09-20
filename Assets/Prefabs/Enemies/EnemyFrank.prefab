@@ -503,6 +503,7 @@ GameObject:
   - component: {fileID: 794146109319597184}
   - component: {fileID: 447831394426510907}
   - component: {fileID: 984011922362029912}
+  - component: {fileID: 2847361928475610392}
   m_Layer: 0
   m_Name: EnemyFrank
   m_TagString: Untagged
@@ -594,3 +595,17 @@ Rigidbody:
   m_Interpolate: 0
   m_Constraints: 0
   m_CollisionDetection: 0
+--- !u!114 &2847361928475610392
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8744380059183830488}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d0c6f219c34b1324c90feed704f4045d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::DungeonRewind.Enemy.FrankAttack
+  projectilePrefab: {fileID: 1999069941914744536, guid: 829cdb4aebe2bb64f82423851a391c46, type: 3}
+  targetHeightOffset: 1

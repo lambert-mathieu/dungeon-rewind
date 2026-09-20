@@ -32,11 +32,26 @@ namespace DungeonRewind.Rewind.Recorders
         private RigidbodyInterpolation previousInterpolationMode;
 
         private bool isBlocked;
+        private bool hasSolidCollider;
 
         protected override void Initialize()
         {
             cachedRigidbody = GetComponent<Rigidbody>();
             cachedTransform = transform;
+            hasSolidCollider = HasSolidCollider();
+        }
+
+        private bool HasSolidCollider()
+        {
+            foreach (Collider attachedCollider in GetComponentsInChildren<Collider>(true))
+            {
+                if (!attachedCollider.isTrigger)
+                {
+                    return true;
+                }
+            }
+
+            return false;
         }
 
         protected override RigidbodySnapshot Capture()
@@ -70,7 +85,7 @@ namespace DungeonRewind.Rewind.Recorders
             Vector3 delta = targetPosition - currentPosition;
             float distance = delta.magnitude;
 
-            if (distance <= minSweepDistance)
+            if (!hasSolidCollider || distance <= minSweepDistance)
             {
                 isBlocked = false;
                 return targetPosition;

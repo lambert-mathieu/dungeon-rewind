@@ -1,8 +1,9 @@
+using DungeonRewind.Combat;
 using UnityEngine;
 
 namespace DungeonRewind.Enemy {
     [RequireComponent(typeof(Rigidbody))]
-    public abstract class EnemyLogic : MonoBehaviour {
+    public abstract class EnemyLogic : MonoBehaviour, IDamageable {
         protected enum EnemyState { Idle, Reposition, PrepareAttack, Attack }
 
         [SerializeField] private Transform enemyVisual;

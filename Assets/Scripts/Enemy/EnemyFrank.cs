@@ -1,6 +1,7 @@
 using UnityEngine;
 
 namespace DungeonRewind.Enemy {
+    [RequireComponent(typeof(FrankAttack))]
     public sealed class EnemyFrank : EnemyLogic {
         private const int maxHealth = 40;
         private const float desiredAttackDistance = 12.0f;
@@ -11,8 +12,8 @@ namespace DungeonRewind.Enemy {
         private const float maxAttackCooldown = 6.0f;
         private const float moveSpeed = 5.0f;
         private const float attackWindupDuration = 0.6f;
-        private const float fireballSpawnHeight = 1.5f;
-        private const float fireballRadius = 0.25f;
+
+        private FrankAttack frankAttack;
 
         protected override int MaxHealth => maxHealth;
         protected override float DesiredAttackDistance => desiredAttackDistance;
@@ -25,13 +26,11 @@ namespace DungeonRewind.Enemy {
         protected override float PrepareAttackDuration => attackWindupDuration;
 
         protected override void PerformAttack() {
-            Vector3 spawnPosition = transform.position + Vector3.up * fireballSpawnHeight;
-            Vector3 directionToPlayer = (PlayerGlobal.PlayerTransform.position - spawnPosition).normalized;
+            if (frankAttack == null) {
+                TryGetComponent(out frankAttack);
+            }
 
-            GameObject fireball = GameObject.CreatePrimitive(PrimitiveType.Sphere);
-            fireball.name = "Fireball";
-            fireball.transform.SetPositionAndRotation(spawnPosition, Quaternion.LookRotation(directionToPlayer));
-            fireball.transform.localScale = Vector3.one * fireballRadius * 2f;
+            frankAttack.OnAttack();
         }
     }
 }
