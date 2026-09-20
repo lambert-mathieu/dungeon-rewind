@@ -536,10 +536,7 @@ PrefabInstance:
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents:
-    - targetCorrespondingSourceObject: {fileID: 7037775739996963285, guid: 1e095d3a1c100b748afeec83368b5ae9, type: 3}
-      insertIndex: -1
-      addedObject: {fileID: 1710433172}
+    m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 1e095d3a1c100b748afeec83368b5ae9, type: 3}
 --- !u!1 &1504552579
 GameObject:
@@ -837,27 +834,6 @@ MonoBehaviour:
   m_ShadowLayerMask: 1
   m_RenderingLayers: 1
   m_ShadowRenderingLayers: 1
---- !u!1 &1710433170 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 7037775739996963285, guid: 1e095d3a1c100b748afeec83368b5ae9, type: 3}
-  m_PrefabInstance: {fileID: 1185102455}
-  m_PrefabAsset: {fileID: 0}
---- !u!114 &1710433172
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1710433170}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 56666c5a40171f54783dd416a44f42bf, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.EventSystems.Physics2DRaycaster
-  m_EventMask:
-    serializedVersion: 2
-    m_Bits: 4294967295
-  m_MaxRayIntersections: 0
 --- !u!20 &1710433177 stripped
 Camera:
   m_CorrespondingSourceObject: {fileID: 1331417635060347387, guid: 1e095d3a1c100b748afeec83368b5ae9, type: 3}
