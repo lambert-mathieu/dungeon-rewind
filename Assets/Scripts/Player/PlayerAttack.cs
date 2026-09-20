@@ -1,9 +1,10 @@
 using DungeonRewind.Enemy;
+using DungeonRewind.Rewind;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
 namespace DungeonRewind.Player {
-    public class PlayerAttack : MonoBehaviour {
+    public class PlayerAttack : MonoBehaviour, IRewindSuspendable {
         private const int punchFrameCount = 3;
         private const float punchFrameDuration = 0.15f;
         private const float extraCooldownDuration = 0f;
@@ -31,6 +32,8 @@ namespace DungeonRewind.Player {
         private float attackElapsedTime;
         private bool attackBuffered;
 
+        private bool rewinding = false;
+
         private void Awake() {
             leftArmDefault = leftArm.Find("ArmDefault").gameObject;
             rightArmDefault = rightArm.Find("ArmDefault").gameObject;
@@ -47,6 +50,10 @@ namespace DungeonRewind.Player {
         }
 
         private void Update() {
+            if (rewinding)
+            {
+                return;
+            }
             float deltaTime = Time.deltaTime;
             if (deltaTime <= 0f) {
                 return;
@@ -56,7 +63,7 @@ namespace DungeonRewind.Player {
         }
 
         public void OnAttack(InputValue value) {
-            if (!value.isPressed) {
+            if (rewinding || !value.isPressed) {
                 return;
             }
 
@@ -175,6 +182,17 @@ namespace DungeonRewind.Player {
                 armRoot.Find("ArmPunch2").gameObject,
                 armRoot.Find("ArmPunch3").gameObject
             };
+        }
+
+        public void SuspendForRewind()
+        {
+            rewinding = true;
+        }
+
+        public void ResumeAfterRewind()
+        {
+            rewinding = false;
+            ResetArmsToDefaultPose();
         }
     }
 }

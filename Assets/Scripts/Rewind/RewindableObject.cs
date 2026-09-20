@@ -28,8 +28,8 @@ namespace DungeonRewind.Rewind
 
         private void Awake()
         {
-            recorders = GetComponentsInChildren<IRewindable>();
-            suspendables = GetComponentsInChildren<IRewindSuspendable>();
+            recorders = GetComponentsInChildren<IRewindable>(true);
+            suspendables = GetComponentsInChildren<IRewindSuspendable>(true);
         }
 
         public void BeginRewind()

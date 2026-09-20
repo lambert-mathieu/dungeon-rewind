@@ -1,9 +1,10 @@
+using DungeonRewind.Rewind;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
 namespace DungeonRewind.Player {
     [RequireComponent(typeof(FirstPersonController))]
-    public class PlayerCamera : MonoBehaviour {
+    public class PlayerCamera : MonoBehaviour, IRewindSuspendable {
         private const float mouseSensitivity = 0.12f;
         private const float minPitch = -88.0f;
         private const float maxPitch = 88.0f;
@@ -66,6 +67,8 @@ namespace DungeonRewind.Player {
         private float verticalSwayOffset;
         private float verticalSwaySpringVelocity;
 
+        private bool rewinding = false;
+
         private void Awake() {
             firstPersonController = GetComponent<FirstPersonController>();
             baseFieldOfView = armCamera.fieldOfView;
@@ -80,6 +83,10 @@ namespace DungeonRewind.Player {
         }
 
         private void Update() {
+            if (rewinding)
+            {
+                return;
+            }
             HandleCursorToggle();
             ApplyLook();
             DetectJumpAndLandingEvents();
@@ -216,5 +223,16 @@ namespace DungeonRewind.Player {
         public void OnLook(InputValue value) {
             lookInput = value.Get<Vector2>();
         }
+
+        public void SuspendForRewind()
+        {
+            rewinding = true;
+        }
+
+        public void ResumeAfterRewind()
+        {
+            rewinding = false;
+        }
+
     }
 }

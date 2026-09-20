@@ -119,6 +119,24 @@ NavMeshSettings:
     debug:
       m_Flags: 0
   m_NavMeshData: {fileID: 0}
+--- !u!1 &133421990 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 5499500969957715197, guid: 1e095d3a1c100b748afeec83368b5ae9, type: 3}
+  m_PrefabInstance: {fileID: 1185102455}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &133421992
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 133421990}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 122654535d8e5c74b99c1f1d663ba65d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::DungeonRewind.Rewind.ActiveRecorder
+  recordRate: 90
 --- !u!1 &178906064
 GameObject:
   m_ObjectHideFlags: 0
@@ -165,6 +183,114 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &637666435 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 6629648038203823175, guid: 1e095d3a1c100b748afeec83368b5ae9, type: 3}
+  m_PrefabInstance: {fileID: 1185102455}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &637666437
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 637666435}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 122654535d8e5c74b99c1f1d663ba65d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::DungeonRewind.Rewind.ActiveRecorder
+  recordRate: 90
+--- !u!1 &658730436 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 7037775739996963285, guid: 1e095d3a1c100b748afeec83368b5ae9, type: 3}
+  m_PrefabInstance: {fileID: 1185102455}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &658730441
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 658730436}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: faebd2c1d89615c459bdf900f2150aeb, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::DungeonRewind.Rewind.Recorders.TransformRecorder
+  recordRate: 90
+--- !u!1 &830271368 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 4421091073528654648, guid: 1e095d3a1c100b748afeec83368b5ae9, type: 3}
+  m_PrefabInstance: {fileID: 1185102455}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &830271370
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 830271368}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 122654535d8e5c74b99c1f1d663ba65d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::DungeonRewind.Rewind.ActiveRecorder
+  recordRate: 90
+--- !u!1 &837022151 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 1533878953483158392, guid: 1e095d3a1c100b748afeec83368b5ae9, type: 3}
+  m_PrefabInstance: {fileID: 1185102455}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &837022153
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 837022151}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 122654535d8e5c74b99c1f1d663ba65d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::DungeonRewind.Rewind.ActiveRecorder
+  recordRate: 90
+--- !u!1 &981289380 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 498438283797139828, guid: 1e095d3a1c100b748afeec83368b5ae9, type: 3}
+  m_PrefabInstance: {fileID: 1185102455}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &981289382
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 981289380}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 122654535d8e5c74b99c1f1d663ba65d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::DungeonRewind.Rewind.ActiveRecorder
+  recordRate: 90
+--- !u!1 &1079466136 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 2119158638828491839, guid: 1e095d3a1c100b748afeec83368b5ae9, type: 3}
+  m_PrefabInstance: {fileID: 1185102455}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &1079466138
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1079466136}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: faebd2c1d89615c459bdf900f2150aeb, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::DungeonRewind.Rewind.Recorders.TransformRecorder
+  recordRate: 90
 --- !u!1001 &1185102455
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -220,8 +346,119 @@ PrefabInstance:
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 6828699019449025205, guid: 1e095d3a1c100b748afeec83368b5ae9, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 1571451438}
+    - targetCorrespondingSourceObject: {fileID: 7037775739996963285, guid: 1e095d3a1c100b748afeec83368b5ae9, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 658730441}
+    - targetCorrespondingSourceObject: {fileID: 6811634913862307595, guid: 1e095d3a1c100b748afeec83368b5ae9, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 2007186175}
+    - targetCorrespondingSourceObject: {fileID: 3359952109456800149, guid: 1e095d3a1c100b748afeec83368b5ae9, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 1607113702}
+    - targetCorrespondingSourceObject: {fileID: 6629648038203823175, guid: 1e095d3a1c100b748afeec83368b5ae9, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 637666437}
+    - targetCorrespondingSourceObject: {fileID: 4421091073528654648, guid: 1e095d3a1c100b748afeec83368b5ae9, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 830271370}
+    - targetCorrespondingSourceObject: {fileID: 4045189723232245593, guid: 1e095d3a1c100b748afeec83368b5ae9, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 1272493865}
+    - targetCorrespondingSourceObject: {fileID: 3376746737423676415, guid: 1e095d3a1c100b748afeec83368b5ae9, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 1998701071}
+    - targetCorrespondingSourceObject: {fileID: 2119158638828491839, guid: 1e095d3a1c100b748afeec83368b5ae9, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 1079466138}
+    - targetCorrespondingSourceObject: {fileID: 498438283797139828, guid: 1e095d3a1c100b748afeec83368b5ae9, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 981289382}
+    - targetCorrespondingSourceObject: {fileID: 1533878953483158392, guid: 1e095d3a1c100b748afeec83368b5ae9, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 837022153}
+    - targetCorrespondingSourceObject: {fileID: 5499500969957715197, guid: 1e095d3a1c100b748afeec83368b5ae9, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 133421992}
+    - targetCorrespondingSourceObject: {fileID: 878303575079997210, guid: 1e095d3a1c100b748afeec83368b5ae9, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 1369796279}
   m_SourcePrefab: {fileID: 100100000, guid: 1e095d3a1c100b748afeec83368b5ae9, type: 3}
+--- !u!1 &1272493863 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 4045189723232245593, guid: 1e095d3a1c100b748afeec83368b5ae9, type: 3}
+  m_PrefabInstance: {fileID: 1185102455}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &1272493865
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1272493863}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 122654535d8e5c74b99c1f1d663ba65d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::DungeonRewind.Rewind.ActiveRecorder
+  recordRate: 90
+--- !u!1 &1369796277 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 878303575079997210, guid: 1e095d3a1c100b748afeec83368b5ae9, type: 3}
+  m_PrefabInstance: {fileID: 1185102455}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &1369796279
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1369796277}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 122654535d8e5c74b99c1f1d663ba65d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::DungeonRewind.Rewind.ActiveRecorder
+  recordRate: 90
+--- !u!1 &1571451436 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 6828699019449025205, guid: 1e095d3a1c100b748afeec83368b5ae9, type: 3}
+  m_PrefabInstance: {fileID: 1185102455}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &1571451438
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1571451436}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: faebd2c1d89615c459bdf900f2150aeb, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::DungeonRewind.Rewind.Recorders.TransformRecorder
+  recordRate: 90
+--- !u!1 &1607113700 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 3359952109456800149, guid: 1e095d3a1c100b748afeec83368b5ae9, type: 3}
+  m_PrefabInstance: {fileID: 1185102455}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &1607113702
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1607113700}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: faebd2c1d89615c459bdf900f2150aeb, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::DungeonRewind.Rewind.Recorders.TransformRecorder
+  recordRate: 90
 --- !u!1 &1648463635
 GameObject:
   m_ObjectHideFlags: 0
@@ -354,6 +591,42 @@ GameObject:
   m_CorrespondingSourceObject: {fileID: 3028212873581382549, guid: 1e095d3a1c100b748afeec83368b5ae9, type: 3}
   m_PrefabInstance: {fileID: 1185102455}
   m_PrefabAsset: {fileID: 0}
+--- !u!1 &1998701069 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 3376746737423676415, guid: 1e095d3a1c100b748afeec83368b5ae9, type: 3}
+  m_PrefabInstance: {fileID: 1185102455}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &1998701071
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1998701069}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 122654535d8e5c74b99c1f1d663ba65d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::DungeonRewind.Rewind.ActiveRecorder
+  recordRate: 90
+--- !u!1 &2007186173 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 6811634913862307595, guid: 1e095d3a1c100b748afeec83368b5ae9, type: 3}
+  m_PrefabInstance: {fileID: 1185102455}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &2007186175
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2007186173}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: faebd2c1d89615c459bdf900f2150aeb, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::DungeonRewind.Rewind.Recorders.TransformRecorder
+  recordRate: 90
 --- !u!1001 &6071755337054707369
 PrefabInstance:
   m_ObjectHideFlags: 0

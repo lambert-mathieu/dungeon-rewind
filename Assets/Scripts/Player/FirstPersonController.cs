@@ -63,6 +63,8 @@ namespace DungeonRewind.Player {
 
         private Rigidbody rb;
         private PlayerControllerState state;
+
+        private Collider collider;
         private bool isSuspended;
         private Vector3 groundNormal = Vector3.up;
 
@@ -81,6 +83,8 @@ namespace DungeonRewind.Player {
             rb.collisionDetectionMode = CollisionDetectionMode.ContinuousDynamic;
             rb.useGravity = false;
 
+            collider = GetComponentInChildren<Collider>();
+
             playerScale.localScale = Vector3.one;
 
             state = PlayerControllerState.CreateInitial(~(1 << gameObject.layer), groundSpeed);
@@ -94,10 +98,12 @@ namespace DungeonRewind.Player {
 
         public void SuspendForRewind() {
             isSuspended = true;
+            collider.transform.localScale = collider.transform.localScale * 0.5f;
         }
 
         public void ResumeAfterRewind() {
             isSuspended = false;
+            collider.transform.localScale = collider.transform.localScale * 2;
             ConsumeFrameInputFlags();
         }
 

@@ -25,12 +25,12 @@ namespace DungeonRewind.Rewind.Recorders
 
         protected override TransformSnapshot Capture()
         {
-            return new TransformSnapshot(cachedTransform.position, cachedTransform.rotation);
+            return new TransformSnapshot(cachedTransform.localPosition, cachedTransform.localRotation);
         }
 
         protected override void Apply(TransformSnapshot snapshot)
         {
-            cachedTransform.SetPositionAndRotation(snapshot.Position, snapshot.Rotation);
+            cachedTransform.SetLocalPositionAndRotation(snapshot.Position, snapshot.Rotation);
         }
 
         protected override TransformSnapshot Interpolate(TransformSnapshot from, TransformSnapshot to, float t)
