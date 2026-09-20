@@ -2,14 +2,15 @@ using UnityEngine;
 using UnityEngine.InputSystem;
 
 namespace DungeonRewind.Player {
-    [RequireComponent(typeof(Camera))]
+    [RequireComponent(typeof(FirstPersonController))]
     public class PlayerCamera : MonoBehaviour {
         private const float mouseSensitivity = 0.12f;
         private const float minPitch = -88.0f;
         private const float maxPitch = 88.0f;
 
         [SerializeField] private Camera armCamera;
-        [SerializeField] private FirstPersonController firstPersonController;
+        [SerializeField] private Transform cameraRoot;
+        [SerializeField] private Transform cameraTransform;
         [SerializeField] private Transform arms;
         [SerializeField] private Transform leftArm;
         [SerializeField] private Transform rightArm;
@@ -48,6 +49,8 @@ namespace DungeonRewind.Player {
         private const float landingSwayReferenceSpeed = 12.0f;
         private const float maxVerticalSwayOffset = 0.25f;
 
+        private FirstPersonController firstPersonController;
+
         private Vector2 lookInput;
         private float pitch;
         private float baseFieldOfView;
@@ -64,6 +67,7 @@ namespace DungeonRewind.Player {
         private float verticalSwaySpringVelocity;
 
         private void Awake() {
+            firstPersonController = GetComponent<FirstPersonController>();
             baseFieldOfView = armCamera.fieldOfView;
             armsBaseLocalPosition = arms.localPosition;
             leftArmBaseLocalPosition = leftArm.localPosition;
@@ -108,13 +112,16 @@ namespace DungeonRewind.Player {
                 return;
             }
 
+            if (!firstPersonController.IsSuspended) {
+                cameraRoot.Rotate(Vector3.up * (lookInput.x * mouseSensitivity));
+            }
+
             pitch = Mathf.Clamp(pitch - lookInput.y * mouseSensitivity, minPitch, maxPitch);
-            transform.localRotation = Quaternion.Euler(pitch, 0f, 0f);
+            cameraTransform.localRotation = Quaternion.Euler(pitch, 0f, 0f);
         }
 
         private float CalculateDirectionFactor(Vector3 horizontalVelocity) {
-            Vector3 cameraForward = transform.forward;
-            cameraForward.y = 0f;
+            Vector3 cameraForward = cameraRoot.forward;
             if (horizontalVelocity.sqrMagnitude <= 0.0001f || cameraForward.sqrMagnitude <= 0.0001f) {
                 return 0f;
             }

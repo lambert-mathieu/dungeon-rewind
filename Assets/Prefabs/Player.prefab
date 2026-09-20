@@ -411,6 +411,7 @@ GameObject:
   - component: {fileID: 4248710897453929840}
   - component: {fileID: 3190175290877865252}
   - component: {fileID: 5863585818295534194}
+  - component: {fileID: 8462951730584627193}
   m_Layer: 8
   m_Name: Player
   m_TagString: Untagged
@@ -1289,7 +1290,6 @@ GameObject:
   - component: {fileID: 1331417635060347387}
   - component: {fileID: 4739084503595046568}
   - component: {fileID: 1028063366335118261}
-  - component: {fileID: 8462951730584627193}
   m_Layer: 0
   m_Name: MainCamera
   m_TagString: MainCamera
@@ -1423,14 +1423,15 @@ MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7037775739996963285}
+  m_GameObject: {fileID: 3028212873581382549}
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: ca0d65fe8d7f441d97c5b823954ba100, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
+  m_Name:
+  m_EditorClassIdentifier:
   armCamera: {fileID: 2287929082254980496}
-  firstPersonController: {fileID: 5876710068756897558}
+  cameraRoot: {fileID: 506004058408903017}
+  cameraTransform: {fileID: 5030144317725138274}
   arms: {fileID: 3231231277176852796}
   leftArm: {fileID: 5570765918143060580}
   rightArm: {fileID: 8330172644030534678}

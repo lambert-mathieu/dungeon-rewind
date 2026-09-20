@@ -51,8 +51,6 @@ namespace DungeonRewind.Player {
         private const float jumpApexFallBonusGravity = -13.0f;
         private const float jumpApexFallBonusTime = 0.25f;
 
-        private const float mouseSensitivity = 0.12f;
-
         private const float groundCheckRadius = 0.49f;
         private const float groundCheckSkin = 0.03f;
         private const int groundCheckRayCount = 20;
@@ -67,7 +65,6 @@ namespace DungeonRewind.Player {
         private bool isSuspended;
 
         private Vector2 moveInput;
-        private Vector2 lookInput;
         private bool isCrouchPressed;
         private bool isJumpHeld;
         private bool jumpPressedThisFrame;
@@ -102,14 +99,6 @@ namespace DungeonRewind.Player {
             ConsumeFrameInputFlags();
         }
 
-        private void Update() {
-            if (isSuspended) {
-                return;
-            }
-
-            ApplyLook();
-        }
-
         private void FixedUpdate() {
             if (isSuspended) {
                 return;
@@ -117,7 +106,7 @@ namespace DungeonRewind.Player {
 
             float deltaTime = Time.fixedDeltaTime;
             bool hasMoveInput = moveInput.sqrMagnitude > 0.0001f;
-            Vector3 inputDirection = (transform.right * moveInput.x + transform.forward * moveInput.y).normalized;
+            Vector3 inputDirection = (cameraRoot.right * moveInput.x + cameraRoot.forward * moveInput.y).normalized;
 
             UpdateTimers(deltaTime);
             ApplySlide(deltaTime, inputDirection, hasMoveInput);
@@ -127,15 +116,6 @@ namespace DungeonRewind.Player {
             ApplyMotion();
             state.SlideDurationEndedThisFrame = false;
             ConsumeFrameInputFlags();
-        }
-
-        private void ApplyLook() {
-            if (Cursor.lockState != CursorLockMode.Locked) {
-                return;
-            }
-
-            float yawDelta = lookInput.x * mouseSensitivity;
-            transform.Rotate(Vector3.up * yawDelta);
         }
 
         private bool GroundCheck(out Vector3 groundNormal) {
@@ -350,13 +330,10 @@ namespace DungeonRewind.Player {
         public Vector3 HorizontalVelocity => state.HorizontalVelocity;
         public float VerticalVelocity => state.VerticalVelocity;
         public bool IsGrounded => state.IsGrounded;
+        public bool IsSuspended => isSuspended;
 
         public void OnMove(InputValue value) {
             moveInput = Vector2.ClampMagnitude(value.Get<Vector2>(), 1f);
-        }
-
-        public void OnLook(InputValue value) {
-            lookInput = value.Get<Vector2>();
         }
 
         public void OnJump(InputValue value) {
