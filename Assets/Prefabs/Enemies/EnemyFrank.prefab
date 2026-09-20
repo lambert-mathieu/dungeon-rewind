@@ -504,6 +504,7 @@ GameObject:
   - component: {fileID: 447831394426510907}
   - component: {fileID: 984011922362029912}
   - component: {fileID: 2847361928475610392}
+  - component: {fileID: 6641590192049808557}
   m_Layer: 0
   m_Name: EnemyFrank
   m_TagString: Untagged
@@ -608,4 +609,19 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::DungeonRewind.Enemy.FrankAttack
   projectilePrefab: {fileID: 1999069941914744536, guid: 829cdb4aebe2bb64f82423851a391c46, type: 3}
-  targetHeightOffset: 1
+  boringFrankProjectilePrefab: {fileID: 1999069941914744536, guid: d1674066967b68d4eab5dc13084e2e4f, type: 3}
+  targetHeightOffset: 1.2
+  attackSpeed: 10
+  attackDamage: 15
+--- !u!114 &6641590192049808557
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8744380059183830488}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 90142865236ab09479ebd5440cf52182, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::DungeonRewind.Rewind.RewindableObject

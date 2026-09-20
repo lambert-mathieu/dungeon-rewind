@@ -1,9 +1,10 @@
 using DungeonRewind.Combat;
+using DungeonRewind.Rewind;
 using UnityEngine;
 
 namespace DungeonRewind.Enemy {
     [RequireComponent(typeof(Rigidbody))]
-    public abstract class EnemyLogic : MonoBehaviour, IDamageable {
+    public abstract class EnemyLogic : MonoBehaviour, IDamageable, IRewindSuspendable {
         protected enum EnemyState { Idle, Reposition, PrepareAttack, Attack }
 
         [SerializeField] private Transform enemyVisual;
@@ -32,6 +33,8 @@ namespace DungeonRewind.Enemy {
         private float timeSinceLastAttack;
         private bool isShowingMove1 = true;
 
+        private bool isRewinding = false;
+
         private void Awake() {
             currentHealth = MaxHealth;
             TryGetComponent(out rb);
@@ -43,6 +46,10 @@ namespace DungeonRewind.Enemy {
         }
 
         private void Update() {
+            if (isRewinding)
+            {
+                return;
+            }
             timeSinceLastAttack += Time.deltaTime;
 
             if (PlayerGlobal.PlayerTransform == null) {
@@ -103,6 +110,10 @@ namespace DungeonRewind.Enemy {
         }
 
         private void FixedUpdate() {
+            if (isRewinding)
+            {
+                return;
+            }
             if (currentState != EnemyState.Reposition || PlayerGlobal.PlayerTransform == null) {
                 ZeroHorizontalVelocity();
                 return;
@@ -204,5 +215,16 @@ namespace DungeonRewind.Enemy {
                 Destroy(gameObject);
             }
         }
+
+        public void SuspendForRewind()
+        {
+            isRewinding = true;
+        }
+
+        public void ResumeAfterRewind()
+        {
+            isRewinding = false;
+        }
+
     }
 }
