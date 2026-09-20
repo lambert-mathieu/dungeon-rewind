@@ -103,10 +103,10 @@ public class HexMapNode : MonoBehaviour, IPointerClickHandler
             RoomType.Tutorial => "TutorialRoom",
             RoomType.Easy => "EnemyRoom",
             RoomType.Hard => "EnemyRoom2",
-            RoomType.MiniBoss => "EnemyRoom3",
-            RoomType.Boss => "BossRoom",
-            RoomType.Blocked => "",
-            RoomType.Teleport => "TeleportRoom",
+            RoomType.MiniBoss => "EnemyRoom",
+            RoomType.Boss => "EnemyRoom2",
+            RoomType.Blocked => "EnemyRoom",
+            RoomType.Teleport => "EnemyRoom",
             _ => ""
         };
 
@@ -137,6 +137,10 @@ public class HexMapNode : MonoBehaviour, IPointerClickHandler
         {
             Debug.Log("No Scene Corridor");
         }
+
+            Cursor.lockState = CursorLockMode.Locked;
+            Cursor.visible = false;
+
 
         door.OpenDoor(nextRoomName);
 
