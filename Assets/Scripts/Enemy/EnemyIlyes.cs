@@ -2,14 +2,14 @@ using UnityEngine;
 
 namespace DungeonRewind.Enemy {
     public sealed class EnemyIlyes : EnemyLogic {
-        private const int maxHealth = 30;
-        private const float desiredAttackDistance = 2.0f;
-        private const float attackDistanceTolerance = 1.0f;
-        private const float aggroGetDistance = 20.0f;
-        private const float aggroLoseDistance = 100.0f;
-        private const float minAttackCooldown = 4.0f;
-        private const float maxAttackCooldown = 99.0f;
-        private const float moveSpeed = 4.0f;
+        private const int maxHealth = 50;
+        private const float desiredAttackDistance = 2.4f;
+        private const float attackDistanceTolerance = 1.2f;
+        private const float aggroGetDistance = 30.0f;
+        private const float aggroLoseDistance = 150.0f;
+        private const float minAttackCooldown = 2.0f;
+        private const float maxAttackCooldown = 999.0f;
+        private const float moveSpeed = 6.0f;
         private const float attackWindupDuration = 0.3f;
         private const float meleeHitSpawnDistance = 1.0f;
         private const float meleeHitSize = 0.5f;

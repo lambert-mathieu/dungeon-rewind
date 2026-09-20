@@ -2811,14 +2811,6 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 1235565477}
     m_Modifications:
-    - target: {fileID: 1778101679423840758, guid: 3ee838a30c096c74194323cb2255a9d6, type: 3}
-      propertyPath: m_LocalScale.y
-      value: 1.1
-      objectReference: {fileID: 0}
-    - target: {fileID: 1778101679423840758, guid: 3ee838a30c096c74194323cb2255a9d6, type: 3}
-      propertyPath: m_LocalPosition.y
-      value: -0.1
-      objectReference: {fileID: 0}
     - target: {fileID: 2986465394985626032, guid: 3ee838a30c096c74194323cb2255a9d6, type: 3}
       propertyPath: m_Name
       value: EnemyIlyes
@@ -2861,14 +2853,6 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 3485401947135816962, guid: 3ee838a30c096c74194323cb2255a9d6, type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 4715676535040778715, guid: 3ee838a30c096c74194323cb2255a9d6, type: 3}
-      propertyPath: m_LocalPosition.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 4715676535040778715, guid: 3ee838a30c096c74194323cb2255a9d6, type: 3}
-      propertyPath: m_LocalPosition.z
       value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []

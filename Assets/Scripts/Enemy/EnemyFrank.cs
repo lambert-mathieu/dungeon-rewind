@@ -2,14 +2,14 @@ using UnityEngine;
 
 namespace DungeonRewind.Enemy {
     public sealed class EnemyFrank : EnemyLogic {
-        private const int maxHealth = 30;
+        private const int maxHealth = 40;
         private const float desiredAttackDistance = 12.0f;
-        private const float attackDistanceTolerance = 3.0f;
-        private const float aggroGetDistance = 20.0f;
-        private const float aggroLoseDistance = 100.0f;
-        private const float minAttackCooldown = 6.0f;
-        private const float maxAttackCooldown = 8.0f;
-        private const float moveSpeed = 3.0f;
+        private const float attackDistanceTolerance = 2.0f;
+        private const float aggroGetDistance = 30.0f;
+        private const float aggroLoseDistance = 150.0f;
+        private const float minAttackCooldown = 5.0f;
+        private const float maxAttackCooldown = 6.0f;
+        private const float moveSpeed = 5.0f;
         private const float attackWindupDuration = 0.6f;
         private const float fireballSpawnHeight = 1.5f;
         private const float fireballRadius = 0.25f;
