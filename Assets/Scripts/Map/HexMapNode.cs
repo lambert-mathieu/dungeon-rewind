@@ -138,8 +138,8 @@ public class HexMapNode : MonoBehaviour, IPointerClickHandler
             Debug.Log("No Scene Corridor");
         }
 
-            Cursor.lockState = CursorLockMode.Locked;
-            Cursor.visible = false;
+        Cursor.lockState = CursorLockMode.Locked;
+        Cursor.visible = false;
 
 
         door.OpenDoor(nextRoomName);
