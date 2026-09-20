@@ -53,15 +53,7 @@ public class HexMapNode : MonoBehaviour, IPointerClickHandler
         }
         else if (isCleared)
         {
-            // Compute luminance to get true grayscale value
-            float gray = (baseColor.r * 0.3f) + (baseColor.g * 0.59f) + (baseColor.b * 0.11f);
-            Color desaturated = new Color(gray, gray, gray, 1f);
-
-            // Blend 40% of the original color with 60% gray, then dim brightness to 45%
-            Color dimmedColor = Color.Lerp(baseColor, desaturated, 0.6f) * 0.45f;
-            dimmedColor.a = 0.85f;
-
-            tileRenderer.color = dimmedColor;
+            tileRenderer.color = new Color(baseColor.r, baseColor.g, baseColor.b, 0.35f);
         }
         else if (isSelectable)
         {
@@ -71,7 +63,7 @@ public class HexMapNode : MonoBehaviour, IPointerClickHandler
         else
         {
             // Future unreached nodes: deeply dimmed and translucent
-            tileRenderer.color = new Color(baseColor.r * 0.25f, baseColor.g * 0.25f, baseColor.b * 0.25f, 0.35f);
+            tileRenderer.color = new Color(baseColor.r, baseColor.g, baseColor.b, 0.35f);
         }
     }
 

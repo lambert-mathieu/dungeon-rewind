@@ -55,6 +55,7 @@ public class PlayerGlobal : MonoBehaviour, IDamageable {
         if (State.CurrentHealth <= 0) {
             Cursor.lockState = CursorLockMode.None;
             Cursor.visible = true;
+            RoomRunData.ResetRun();
             SceneManager.LoadScene(mainMenuSceneName);
         }
     }
