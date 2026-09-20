@@ -10,7 +10,7 @@ namespace DungeonRewind.Player {
 
         [SerializeField] private Camera armCamera;
         [SerializeField] private FirstPersonController firstPersonController;
-        [SerializeField] private Transform armRight;
+        [SerializeField] private Transform arms;
         private const float referenceLowSpeed = 8.0f;
         private const float referenceHighSpeed = 20.0f;
         private const float directionFullBoostAngle = 40.0f;
@@ -23,27 +23,41 @@ namespace DungeonRewind.Player {
         private const float handSwayReferenceMidSpeed = 10.0f;
         private const float handSwayReferenceHighSpeed = 12.0f;
         private const float minHandSwayAmplitude = 0.05f;
-        private const float midHandSwayAmplitude = 0.15f;
-        private const float maxHandSwayAmplitude = 0.05f;
+        private const float midHandSwayAmplitude = 0.10f;
+        private const float maxHandSwayAmplitude = 0.08f;
         private const float minHandSwayFrequency = 0.3f;
         private const float midHandSwayFrequency = 1.2f;
-        private const float maxHandSwayFrequency = 0.3f;
-        private const float swayMagnitudeIncreaseSpeed = 0.5f;
-        private const float swayMagnitudeDecreaseSpeed = 1.0f;
-        private const float swayFrequencyIncreaseSpeed = 1.0f;
+        private const float maxHandSwayFrequency = 0.8f;
+        private const float swayMagnitudeIncreaseSpeed = 2.0f;
+        private const float swayMagnitudeDecreaseSpeed = 2.0f;
+        private const float swayFrequencyIncreaseSpeed = 2.0f;
         private const float swayFrequencyDecreaseSpeed = 2.0f;
+        private const float airborneHandSwayMultiplier = 0.6f;
+
+        private const float verticalSwayStiffness = 81.0f;
+        private const float verticalSwayDamping = 18.0f;
+        private const float jumpSwayKickVelocity = 2.45f;
+        private const float jumpDetectionVerticalVelocityThreshold = 3.0f;
+        private const float minLandingSwayKickVelocity = 0.73f;
+        private const float maxLandingSwayKickVelocity = 3.67f;
+        private const float landingSwayReferenceSpeed = 12.0f;
+        private const float maxVerticalSwayOffset = 0.25f;
 
         private Vector2 lookInput;
         private float pitch;
         private float baseFieldOfView;
-        private Vector3 armRightBaseLocalPosition;
+        private Vector3 armsBaseLocalPosition;
         private float handSwayPhase;
         private float currentHandSwayAmplitude;
         private float currentHandSwayFrequency;
+        private bool hasGroundStateBaseline;
+        private bool wasGroundedLastFrame;
+        private float verticalSwayOffset;
+        private float verticalSwaySpringVelocity;
 
         private void Awake() {
             baseFieldOfView = armCamera.fieldOfView;
-            armRightBaseLocalPosition = armRight.localPosition;
+            armsBaseLocalPosition = arms.localPosition;
         }
 
         private void Start() {
@@ -54,6 +68,7 @@ namespace DungeonRewind.Player {
         private void Update() {
             HandleCursorToggle();
             ApplyLook();
+            DetectJumpAndLandingEvents();
 
             float deltaTime = Time.deltaTime;
             if (deltaTime <= 0f) {
@@ -64,6 +79,7 @@ namespace DungeonRewind.Player {
             float directionFactor = CalculateDirectionFactor(horizontalVelocity);
 
             UpdateDynamicFieldOfView(CalculateFieldOfViewSpeedIntensity(horizontalVelocity, directionFactor), deltaTime);
+            UpdateVerticalSway(deltaTime);
             UpdateHandAnimation(CalculateHandSwaySpeedIntensity(horizontalVelocity, directionFactor), deltaTime);
         }
 
@@ -126,6 +142,11 @@ namespace DungeonRewind.Player {
             float targetAmplitude = InterpolateThreePoint(minHandSwayAmplitude, midHandSwayAmplitude, maxHandSwayAmplitude, speedIntensity);
             float targetFrequency = InterpolateThreePoint(minHandSwayFrequency, midHandSwayFrequency, maxHandSwayFrequency, speedIntensity);
 
+            if (!firstPersonController.IsGrounded) {
+                targetAmplitude *= airborneHandSwayMultiplier;
+                targetFrequency *= airborneHandSwayMultiplier;
+            }
+
             float amplitudeTransitionSpeed = targetAmplitude > currentHandSwayAmplitude ? swayMagnitudeIncreaseSpeed : swayMagnitudeDecreaseSpeed;
             float frequencyTransitionSpeed = targetFrequency > currentHandSwayFrequency ? swayFrequencyIncreaseSpeed : swayFrequencyDecreaseSpeed;
 
@@ -137,7 +158,36 @@ namespace DungeonRewind.Player {
             float horizontalOffset = Mathf.Sin(handSwayPhase) * currentHandSwayAmplitude;
             float verticalOffset = Mathf.Sin(handSwayPhase * 2f) * currentHandSwayAmplitude * 0.5f;
 
-            armRight.localPosition = armRightBaseLocalPosition + new Vector3(horizontalOffset, verticalOffset, 0f);
+            arms.localPosition = armsBaseLocalPosition + new Vector3(horizontalOffset, verticalOffset + verticalSwayOffset, 0f);
+        }
+
+        private void DetectJumpAndLandingEvents() {
+            bool isGroundedNow = firstPersonController.IsGrounded;
+
+            if (!hasGroundStateBaseline) {
+                hasGroundStateBaseline = true;
+                wasGroundedLastFrame = isGroundedNow;
+                return;
+            }
+
+            if (isGroundedNow && !wasGroundedLastFrame) {
+                float impactSpeed = Mathf.Abs(firstPersonController.VerticalVelocity);
+                float landingIntensity = Mathf.Clamp01(impactSpeed / landingSwayReferenceSpeed);
+                ApplyVerticalSwayKick(-Mathf.Lerp(minLandingSwayKickVelocity, maxLandingSwayKickVelocity, landingIntensity));
+            } else if (!isGroundedNow && wasGroundedLastFrame && firstPersonController.VerticalVelocity >= jumpDetectionVerticalVelocityThreshold) {
+                ApplyVerticalSwayKick(-jumpSwayKickVelocity);
+            }
+
+            wasGroundedLastFrame = isGroundedNow;
+        }
+
+        private void ApplyVerticalSwayKick(float velocityKick) {
+            verticalSwaySpringVelocity += velocityKick;
+        }
+
+        private void UpdateVerticalSway(float deltaTime) {
+            verticalSwaySpringVelocity += (-verticalSwayStiffness * verticalSwayOffset - verticalSwayDamping * verticalSwaySpringVelocity) * deltaTime;
+            verticalSwayOffset = Mathf.Clamp(verticalSwayOffset + verticalSwaySpringVelocity * deltaTime, -maxVerticalSwayOffset, maxVerticalSwayOffset);
         }
 
         public void OnLook(InputValue value) {
