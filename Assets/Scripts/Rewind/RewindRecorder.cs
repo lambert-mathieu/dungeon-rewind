@@ -22,6 +22,14 @@ namespace DungeonRewind.Rewind {
         protected virtual void OnRewindEndInternal(TSnapshot finalSnapshot) { }
 
         private void Awake() {
+            EnsureInitialized();
+        }
+
+        private void EnsureInitialized() {
+            if (buffer != null) {
+                return;
+            }
+
             int capacity = Mathf.CeilToInt(historyDuration * recordRate) + 1;
 
             buffer = new SnapshotBuffer<TSnapshot>(capacity);
@@ -30,6 +38,8 @@ namespace DungeonRewind.Rewind {
         }
 
         public void RecordTick(float time) {
+            EnsureInitialized();
+
             if (time < nextRecordTime) {
                 return;
             }
@@ -43,6 +53,7 @@ namespace DungeonRewind.Rewind {
         }
 
         public void RewindTo(float time) {
+            EnsureInitialized();
             lastSampledTime = time;
 
             if (!buffer.TryFindBracket(time, out Sample<TSnapshot> from, out Sample<TSnapshot> to, out float t)) {
@@ -54,6 +65,7 @@ namespace DungeonRewind.Rewind {
         }
 
         public void OnRewindBegin(float time) {
+            EnsureInitialized();
             lastSampledTime = time;
             LastAppliedSnapshot = Capture();
             buffer.Push(lastSampledTime, LastAppliedSnapshot);

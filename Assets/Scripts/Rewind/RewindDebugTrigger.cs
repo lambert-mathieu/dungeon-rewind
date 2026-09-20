@@ -22,7 +22,9 @@ namespace DungeonRewind.Rewind {
 
             if (key.wasPressedThisFrame && !target.IsRewinding) {
                 target.BeginRewind();
-            } else if (key.wasReleasedThisFrame && target.IsRewinding) {
+            }
+
+            if (!key.isPressed && target.IsRewinding) {
                 target.EndRewind();
             }
         }
