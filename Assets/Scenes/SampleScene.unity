@@ -2935,22 +2935,6 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 1235565477}
     m_Modifications:
-    - target: {fileID: 6424971136121797, guid: 8dd178e0caaba35499f7a84bb74229ff, type: 3}
-      propertyPath: m_LocalScale.y
-      value: 1.1
-      objectReference: {fileID: 0}
-    - target: {fileID: 6424971136121797, guid: 8dd178e0caaba35499f7a84bb74229ff, type: 3}
-      propertyPath: m_LocalPosition.y
-      value: -0.1
-      objectReference: {fileID: 0}
-    - target: {fileID: 2847361928475610392, guid: 8dd178e0caaba35499f7a84bb74229ff, type: 3}
-      propertyPath: attackSpeed
-      value: 5
-      objectReference: {fileID: 0}
-    - target: {fileID: 2847361928475610392, guid: 8dd178e0caaba35499f7a84bb74229ff, type: 3}
-      propertyPath: projectilePrefab
-      value: 
-      objectReference: {fileID: 1999069941914744536, guid: 829cdb4aebe2bb64f82423851a391c46, type: 3}
     - target: {fileID: 5616086689053066254, guid: 8dd178e0caaba35499f7a84bb74229ff, type: 3}
       propertyPath: m_LocalPosition.x
       value: -25.97
