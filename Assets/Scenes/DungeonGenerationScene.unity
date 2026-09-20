@@ -159,12 +159,59 @@ Transform:
   m_GameObject: {fileID: 178906064}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -11.91085, y: 0.5, z: 4.83993}
+  m_LocalPosition: {x: -62.810852, y: 0.5, z: 4.83993}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &1112714364
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1112714365}
+  - component: {fileID: 1112714366}
+  m_Layer: 0
+  m_Name: CameraReferences
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1112714365
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1112714364}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: -50.84118, y: 2.36125, z: -0.06}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1112714366
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1112714364}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 474a5f70c8b983042a252abb586cc869, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::CameraRefs
+  playerCamera: {fileID: 1185102457}
+  armCamera: {fileID: 1185102456}
+  graphCamera: {fileID: 1192780976}
 --- !u!1001 &1185102455
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -179,7 +226,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 7109493012723441925, guid: 1e095d3a1c100b748afeec83368b5ae9, type: 3}
       propertyPath: m_LocalPosition.x
-      value: 0
+      value: -50.9
       objectReference: {fileID: 0}
     - target: {fileID: 7109493012723441925, guid: 1e095d3a1c100b748afeec83368b5ae9, type: 3}
       propertyPath: m_LocalPosition.y
@@ -396,7 +443,7 @@ Transform:
   m_GameObject: {fileID: 1648463635}
   serializedVersion: 2
   m_LocalRotation: {x: 0.40821788, y: -0.23456968, z: 0.10938163, w: 0.8754261}
-  m_LocalPosition: {x: 0, y: 3, z: 0}
+  m_LocalPosition: {x: -50.9, y: 3, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -479,7 +526,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 2237086378614222955, guid: c8ae1ba5287770443803ad08fa0e4d3f, type: 3}
       propertyPath: m_LocalPosition.x
-      value: 0
+      value: -50.9
       objectReference: {fileID: 0}
     - target: {fileID: 2237086378614222955, guid: c8ae1ba5287770443803ad08fa0e4d3f, type: 3}
       propertyPath: m_LocalPosition.y
@@ -522,9 +569,21 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 2100000, guid: c84065ccf5f89344ba6dbd97861c82bd, type: 2}
     - target: {fileID: 2639879820501144939, guid: c8ae1ba5287770443803ad08fa0e4d3f, type: 3}
+      propertyPath: armCamera
+      value: 
+      objectReference: {fileID: 1185102456}
+    - target: {fileID: 2639879820501144939, guid: c8ae1ba5287770443803ad08fa0e4d3f, type: 3}
       propertyPath: dungeonData
       value: 
       objectReference: {fileID: 11400000, guid: d9b52d56f88d24743b353ce899549f82, type: 2}
+    - target: {fileID: 2639879820501144939, guid: c8ae1ba5287770443803ad08fa0e4d3f, type: 3}
+      propertyPath: graphCamera
+      value: 
+      objectReference: {fileID: 1192780976}
+    - target: {fileID: 2639879820501144939, guid: c8ae1ba5287770443803ad08fa0e4d3f, type: 3}
+      propertyPath: playerCamera
+      value: 
+      objectReference: {fileID: 1185102457}
     - target: {fileID: 2751206486803241716, guid: c8ae1ba5287770443803ad08fa0e4d3f, type: 3}
       propertyPath: 'm_Materials.Array.data[0]'
       value: 

@@ -9,6 +9,10 @@ public class OpenDoor : MonoBehaviour
     [SerializeField] private PlayerData playerData;
     [SerializeField] private DungeonData dungeonData;
     [SerializeField] private Transform currentExit;
+    public Camera playerCamera;
+    public Camera armCamera;
+    public Camera graphCamera;
+
 
     private float minDistance = 5f;
     private bool isLoadingCorridor = false;
@@ -154,6 +158,13 @@ public class OpenDoor : MonoBehaviour
         isLoadingCorridor = false;
     }
 
+    private void Awake()
+    {
+        playerCamera.gameObject.SetActive(true);
+        armCamera.gameObject.SetActive(true);
+        graphCamera.gameObject.SetActive(false);
+    }
+
     private void Update()
     {
         if (playerData.playerTransform == null)
@@ -170,15 +181,11 @@ public class OpenDoor : MonoBehaviour
             door.transform.position
         );
 
-        if (
-            Keyboard.current.eKey.wasPressedThisFrame &&
-            distancePlayerDoor <= minDistance
-        )
+        if (Keyboard.current.eKey.wasPressedThisFrame && distancePlayerDoor <= minDistance)
         {
-            LoadCorridor();
 
-            door.transform.localPosition =
-                new Vector3(0, 6, 0);
+            LoadCorridor();
+            door.transform.localPosition = new Vector3(0, 6, 0);
         }
     }
 }

@@ -1,3 +1,4 @@
+using System;
 using JetBrains.Annotations;
 using UnityEngine;
 using UnityEngine.InputSystem;
@@ -163,21 +164,57 @@ private async void HandleRoomSelected(string nextRoomName)
         isLoadingRoom = false;
     }
 
+    void OpenDoor()
+    {
+         // Call in graph
+        if (!string.IsNullOrEmpty(selectedRoom.roomName))
+        {
+            Debug.Log("Room name: " + selectedRoom.roomName);
+            LoadNextRoom(selectedRoom.roomName);
+
+            exitDoor.transform.localPosition = new Vector3(-7.65f, 6f, 0);
+            entranceDoor.transform.localPosition = new Vector3(7.39f, 2.54f, 0);
+
+        }
+
+        else
+        {
+            Debug.Log("Room name was empty");
+        }
+    }
+
+    void Start()
+    {
+        Scene scene = SceneManager.GetSceneByName("DungeonGenerationScene");
+        if (!scene.isLoaded)
+                {
+                    Debug.LogWarning("PlayerScene is not loaded.");
+                    return;
+                }
+
+
+                foreach (GameObject root in scene.GetRootGameObjects())
+                {
+                    cameraRefs = root.GetComponentInChildren<CameraRefs>(true);
+
+                    if (cameraRefs != null)
+                        break;
+                }
+
+                if (cameraRefs == null)
+                {
+                    Debug.LogWarning("CameraReferences was not found in PlayerScene.");
+                    return;
+                }
+    }
+
     void Update()
     {
+
         if (playerData.playerTransform == null)
             return;
 
-        float distancePlayerDoor =
-            Vector3.Distance(
-                playerData.playerTransform.position,
-                exitDoor.transform.position
-            );
-
-        Debug.DrawLine(
-            playerData.playerTransform.position,
-            exitDoor.transform.position
-        );
+        float distancePlayerDoor = Vector3.Distance(playerData.playerTransform.position, exitDoor.transform.position);
 
         if (Keyboard.current.eKey.wasPressedThisFrame && distancePlayerDoor <= minDistance)
         {
