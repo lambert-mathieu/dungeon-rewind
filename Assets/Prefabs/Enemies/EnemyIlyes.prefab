@@ -194,6 +194,7 @@ GameObject:
   - component: {fileID: 523698587793958054}
   - component: {fileID: 241528159610205656}
   - component: {fileID: 9178045084736756793}
+  - component: {fileID: 1043755829132308736}
   m_Layer: 0
   m_Name: EnemyIlyes
   m_TagString: Untagged
@@ -285,6 +286,18 @@ Rigidbody:
   m_Interpolate: 1
   m_Constraints: 112
   m_CollisionDetection: 2
+--- !u!114 &1043755829132308736
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2986465394985626032}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 90142865236ab09479ebd5440cf52182, type: 3}
+  m_Name:
+  m_EditorClassIdentifier: Assembly-CSharp::DungeonRewind.Rewind.RewindableObject
 --- !u!1 &4894361737278527105
 GameObject:
   m_ObjectHideFlags: 0
