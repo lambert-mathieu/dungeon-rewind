@@ -37,6 +37,7 @@ namespace DungeonRewind.Player {
         private const float gravity = -16.0f;
         private const float coyoteGravity = -10.0f;
         private const float maxFallSpeed = 35.0f;
+        private const float groundedStickVerticalVelocity = -2.0f;
         private const float jumpVelocity = 6.3f;
         private const float jumpVelocitySustain = 3.6f;
         private const float crouchJumpVelocity = 5.8f;
@@ -63,6 +64,7 @@ namespace DungeonRewind.Player {
         private Rigidbody rb;
         private PlayerControllerState state;
         private bool isSuspended;
+        private Vector3 groundNormal = Vector3.up;
 
         private Vector2 moveInput;
         private bool isCrouchPressed;
@@ -107,19 +109,20 @@ namespace DungeonRewind.Player {
             float deltaTime = Time.fixedDeltaTime;
             bool hasMoveInput = moveInput.sqrMagnitude > 0.0001f;
             Vector3 inputDirection = (cameraRoot.right * moveInput.x + cameraRoot.forward * moveInput.y).normalized;
+            bool wasGroundedLastStep = state.IsGrounded;
 
             UpdateTimers(deltaTime);
             ApplySlide(deltaTime, inputDirection, hasMoveInput);
             ApplyCrouch(deltaTime);
-            ApplyVerticalMovement(deltaTime);
+            ApplyVerticalMovement(deltaTime, wasGroundedLastStep);
             ApplyHorizontalMovement(deltaTime, inputDirection, hasMoveInput);
-            ApplyMotion();
+            ApplyMotion(wasGroundedLastStep);
             state.SlideDurationEndedThisFrame = false;
             ConsumeFrameInputFlags();
         }
 
-        private bool GroundCheck(out Vector3 groundNormal) {
-            groundNormal = Vector3.up;
+        private bool GroundCheck(out Vector3 hitGroundNormal) {
+            hitGroundNormal = Vector3.up;
             bool grounded = false;
             float bestAngle = slopeLimit;
 
@@ -143,14 +146,14 @@ namespace DungeonRewind.Player {
 
                 grounded = true;
                 bestAngle = angleFromUp;
-                groundNormal = hit.normal;
+                hitGroundNormal = hit.normal;
             }
 
             return grounded;
         }
 
         private void UpdateTimers(float deltaTime) {
-            state.IsGrounded = GroundCheck(out _);
+            state.IsGrounded = GroundCheck(out groundNormal);
 
             state.LastJumpTime += deltaTime;
 
@@ -235,9 +238,11 @@ namespace DungeonRewind.Player {
             }
         }
 
-        private void ApplyVerticalMovement(float deltaTime) {
+        private void ApplyVerticalMovement(float deltaTime, bool wasGroundedLastStep) {
             if (!state.IsGrounded) {
                 state.VerticalVelocity += (state.CoyoteTimer <= jumpCoyoteTime ? coyoteGravity : gravity) * deltaTime;
+            } else if (wasGroundedLastStep) {
+                state.VerticalVelocity = groundedStickVerticalVelocity;
             }
 
             if (state.LastJumpApexTime <= jumpApexFallBonusTime) {
@@ -317,8 +322,14 @@ namespace DungeonRewind.Player {
             state.HorizontalVelocity = Vector3.MoveTowards(state.HorizontalVelocity, targetVelocity, acceleration * deltaTime);
         }
 
-        private void ApplyMotion() {
-            rb.linearVelocity = new Vector3(state.HorizontalVelocity.x, state.VerticalVelocity, state.HorizontalVelocity.z);
+        private void ApplyMotion(bool wasGroundedLastStep) {
+            Vector3 horizontalVelocity = new Vector3(state.HorizontalVelocity.x, 0f, state.HorizontalVelocity.z);
+
+            if (state.IsGrounded && wasGroundedLastStep && !state.IsJumping) {
+                rb.linearVelocity = horizontalVelocity + groundNormal * state.VerticalVelocity;
+            } else {
+                rb.linearVelocity = horizontalVelocity + Vector3.up * state.VerticalVelocity;
+            }
         }
 
         private void ConsumeFrameInputFlags() {
