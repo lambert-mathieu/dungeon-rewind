@@ -232,6 +232,7 @@ namespace DungeonRewind.Player {
         public void ResumeAfterRewind()
         {
             rewinding = false;
+            pitch = Mathf.Clamp(Mathf.DeltaAngle(0f, cameraTransform.localEulerAngles.x), minPitch, maxPitch);
         }
 
     }
