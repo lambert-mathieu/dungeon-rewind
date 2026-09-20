@@ -64,7 +64,7 @@ namespace DungeonRewind.Enemy
 
             if (TryGetDamageable(other, out IDamageable damageable))
             {
-                damageable.TakeDamage(damage);
+                damageable.TakeDamage(damage, isRewinding);
             }
 
             Destroy(gameObject);

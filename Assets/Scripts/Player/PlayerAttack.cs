@@ -148,7 +148,7 @@ namespace DungeonRewind.Player {
 
             if (Physics.Raycast(attackRaycastOrigin.position, attackRaycastOrigin.forward, out RaycastHit hit, attackRange, attackHittableLayers)
                 && hit.collider.TryGetComponent(out EnemyLogic enemyLogic)) {
-                enemyLogic.TakeDamage(attackDamage);
+                enemyLogic.TakeDamage(attackDamage, false);
             }
         }
 

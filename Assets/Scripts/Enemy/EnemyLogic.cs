@@ -1,3 +1,4 @@
+using System.Collections;
 using DungeonRewind.Combat;
 using DungeonRewind.Rewind;
 using UnityEngine;
@@ -13,6 +14,9 @@ namespace DungeonRewind.Enemy {
         [SerializeField] private GameObject move2Visual;
         [SerializeField] private GameObject prepareAttackVisual;
         [SerializeField] private GameObject attackVisual;
+        private Color damageFlashColorRewind = new Color(0.557f, 0.239f, 0.745f);
+        private Color damageFlashColorDefault = new Color(0.87f, 0.04f, 0.15f);
+        private float damageFlashDuration = 0.1f;
 
         protected abstract int MaxHealth { get; }
         protected abstract float DesiredAttackDistance { get; }
@@ -28,6 +32,8 @@ namespace DungeonRewind.Enemy {
 
         private int currentHealth;
         private Rigidbody rb;
+        private SpriteRenderer[] spriteRenderers;
+        private Coroutine damageFlashRoutine;
         private EnemyState currentState;
         private float stateTimer;
         private float timeSinceLastAttack;
@@ -38,6 +44,7 @@ namespace DungeonRewind.Enemy {
         private void Awake() {
             currentHealth = MaxHealth;
             TryGetComponent(out rb);
+            spriteRenderers = GetComponentsInChildren<SpriteRenderer>(true);
             rb.isKinematic = false;
             rb.constraints = RigidbodyConstraints.FreezeRotation;
             rb.interpolation = RigidbodyInterpolation.Interpolate;
@@ -209,10 +216,42 @@ namespace DungeonRewind.Enemy {
 
         protected abstract void PerformAttack();
 
-        public void TakeDamage(int amount) {
+        public void TakeDamage(int amount, bool causedByRewindMagic) {
             currentHealth -= amount;
+
+            Color damageColor = causedByRewindMagic ? damageFlashColorRewind : damageFlashColorDefault;
             if (currentHealth <= 0) {
-                Destroy(gameObject);
+                StartCoroutine(DieFlashRoutine(damageColor));
+                return;
+            }
+
+            if (damageFlashRoutine != null) {
+                StopCoroutine(damageFlashRoutine);
+            }
+            damageFlashRoutine = StartCoroutine(DamageFlashRoutine(damageColor));
+        }
+
+        private IEnumerator DamageFlashRoutine(Color damageColor) {
+            SetSpriteColor(damageColor);
+            yield return new WaitForSeconds(damageFlashDuration);
+            SetSpriteColor(Color.white);
+            yield return new WaitForSeconds(damageFlashDuration);
+            SetSpriteColor(damageColor);
+            yield return new WaitForSeconds(damageFlashDuration);
+            SetSpriteColor(Color.white);
+            damageFlashRoutine = null;
+        }
+
+        private IEnumerator DieFlashRoutine(Color damageColor)
+        {
+            SetSpriteColor(damageColor);
+            yield return new WaitForSeconds(damageFlashDuration);
+            Destroy(gameObject);
+        }
+
+        private void SetSpriteColor(Color color) {
+            foreach (SpriteRenderer spriteRenderer in spriteRenderers) {
+                spriteRenderer.color = color;
             }
         }
 
