@@ -38,9 +38,9 @@
                 },
                 {
                     "name": "UseAbility",
-                    "type": "Button",
+                    "type": "Value",
                     "id": "89e04f6b-de89-4281-9b8d-aae71bfb3703",
-                    "expectedControlType": "",
+                    "expectedControlType": "Button",
                     "processors": "",
                     "interactions": "",
                     "initialStateCheck": false,

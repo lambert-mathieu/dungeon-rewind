@@ -34,7 +34,10 @@ namespace DungeonRewind.Rewind
 
         public void BeginRewind()
         {
-            Assert.IsFalse(isRewinding);
+            if (isRewinding)
+            {
+                return; //skip
+            }
             isRewinding = true;
             rewindTime = timelineTime;
             rewindSpeed = baseRewindSpeed;
@@ -51,7 +54,10 @@ namespace DungeonRewind.Rewind
         }
         public void EndRewind()
         {
-            Assert.IsTrue(isRewinding);
+            if (!isRewinding)
+            {
+                return; //skip
+            }
             foreach(IRewindSuspendable sus in suspendables)
             {
                 sus.ResumeAfterRewind();

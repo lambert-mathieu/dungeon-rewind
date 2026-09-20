@@ -466,7 +466,6 @@ GameObject:
   - component: {fileID: 6375801405240557978}
   - component: {fileID: 4248710897453929840}
   - component: {fileID: 3190175290877865252}
-  - component: {fileID: 5863585818295534194}
   - component: {fileID: 8462951730584627193}
   m_Layer: 8
   m_Name: Player
@@ -490,6 +489,7 @@ Transform:
   m_Children:
   - {fileID: 506004058408903017}
   - {fileID: 8291863658829783380}
+  - {fileID: 6301392628926092360}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &1020978208878062000
@@ -611,20 +611,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 90142865236ab09479ebd5440cf52182, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::DungeonRewind.Rewind.RewindableObject
---- !u!114 &5863585818295534194
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3028212873581382549}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 5de03f6985e00494daf7fd0249968637, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::DungeonRewind.Rewind.RewindDebugTrigger
-  target: {fileID: 3190175290877865252}
-  rewindKey: 32
 --- !u!114 &8462951730584627193
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1272,6 +1258,50 @@ Transform:
   m_Children: []
   m_Father: {fileID: 8291863658829783380}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &6558880803479629715
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 6301392628926092360}
+  - component: {fileID: 4651504662881971693}
+  m_Layer: 0
+  m_Name: GlobalRewinder
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &6301392628926092360
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6558880803479629715}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 0, y: 0.9679799, z: -0.5}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 7109493012723441925}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &4651504662881971693
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6558880803479629715}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b2a1afba2f912e3429bbb6d80284409e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::DungeonRewind.Rewind.GlobalRewinder
 --- !u!1 &6629648038203823175
 GameObject:
   m_ObjectHideFlags: 0
