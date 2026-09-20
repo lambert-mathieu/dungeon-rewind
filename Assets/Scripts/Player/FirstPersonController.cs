@@ -348,6 +348,8 @@ namespace DungeonRewind.Player {
         }
 
         public Vector3 HorizontalVelocity => state.HorizontalVelocity;
+        public float VerticalVelocity => state.VerticalVelocity;
+        public bool IsGrounded => state.IsGrounded;
 
         public void OnMove(InputValue value) {
             moveInput = Vector2.ClampMagnitude(value.Get<Vector2>(), 1f);
