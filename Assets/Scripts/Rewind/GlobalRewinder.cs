@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
@@ -5,6 +6,8 @@ namespace DungeonRewind.Rewind
 {
     public class GlobalRewinder : MonoBehaviour
     {
+        public static event Action<bool> RewindStateChanged;
+
         public void BeginRewindAll()
         {
             foreach (RewindableObject rewindable in FindObjectsByType<RewindableObject>(FindObjectsSortMode.None))
@@ -23,7 +26,8 @@ namespace DungeonRewind.Rewind
 
         private void OnUseAbility(InputValue value)
         {
-            if (value.isPressed)
+            bool isPressed = value.isPressed;
+            if (isPressed)
             {
                 BeginRewindAll();
             }
@@ -31,6 +35,7 @@ namespace DungeonRewind.Rewind
             {
                 StopRewindAll();
             }
+            RewindStateChanged?.Invoke(isPressed);
         }
     }
 }

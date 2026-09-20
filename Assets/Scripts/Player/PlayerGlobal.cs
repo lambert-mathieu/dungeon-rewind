@@ -1,3 +1,4 @@
+using System;
 using DungeonRewind.Combat;
 using UnityEngine;
 
@@ -20,6 +21,7 @@ public class PlayerGlobal : MonoBehaviour, IDamageable {
     public static Transform PlayerTransform { get; private set; }
     public static GameObject PlayerObject { get; private set; }
     public static PlayerState State { get; private set; } = new PlayerState(200);
+    public static event Action PlayerDamaged;
 
     private const int maxHealth = 50;
 
@@ -46,5 +48,6 @@ public class PlayerGlobal : MonoBehaviour, IDamageable {
 
     public void TakeDamage(int amount, bool causedByRewindMagic) {
         State.TakeDamage(amount, causedByRewindMagic);
+        PlayerDamaged?.Invoke();
     }
 }
