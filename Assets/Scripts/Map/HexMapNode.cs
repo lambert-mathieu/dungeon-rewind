@@ -1,11 +1,11 @@
 using System;
 using UnityEngine;
+using UnityEngine.EventSystems;
 using UnityEngine.SceneManagement;
 
 [RequireComponent(typeof(Collider2D))]
-public class HexMapNode : MonoBehaviour
+public class HexMapNode : MonoBehaviour, IPointerClickHandler
 {
-
     // Production listener: OpenCorridorDoor subscribes to this
     public static event Action<string> OnRoomNodeSelected;
 
@@ -31,7 +31,7 @@ public class HexMapNode : MonoBehaviour
         // Distinct color tint for each room category
         switch (roomType)
         {
-            case RoomType.Tutorial:     baseColor = new Color(0.3f, 0.75f, 0.95f); break; // Blue
+            case RoomType.Tutorial: baseColor = new Color(0.3f, 0.75f, 0.95f); break; // Blue
             case RoomType.Easy:     baseColor = new Color(0.35f, 0.8f, 0.35f); break; // Green
             case RoomType.Hard:     baseColor = new Color(0.95f, 0.5f, 0.15f); break; // Orange
             case RoomType.MiniBoss: baseColor = new Color(0.65f, 0.25f, 0.85f); break; // Purple
@@ -72,10 +72,13 @@ public class HexMapNode : MonoBehaviour
         }
     }
 
-    void OnMouseDown()
+    // Replaces OnMouseDown() to support the modern Unity Event & Input systems
+    public void OnPointerClick(PointerEventData eventData)
     {
+        // Only trigger on left click / primary touch
+        if (eventData.button != PointerEventData.InputButton.Left) return;
 
-        Debug.Log("I RUN MOUSE DOWN");
+        Debug.Log("I RUN POINTER CLICK");
         if (!isSelectable) return;
 
         HexGridManager manager = GetComponentInParent<HexGridManager>();

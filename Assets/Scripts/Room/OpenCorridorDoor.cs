@@ -12,8 +12,38 @@ public class OpenCorridorDoor : MonoBehaviour
     [SerializeField] private DungeonData dungeonData;
     [SerializeField] private Transform currentExit;
 
+    [SerializeField] private string mapSceneName = "LevelMapScene";
+    private bool isMapOpen = false;
+
     private float minDistance = 5f;
     private bool isLoadingRoom = false;
+
+    private void OnEnable()
+{
+    HexMapNode.OnRoomNodeSelected += HandleRoomSelected;
+}
+
+private void OnDisable()
+{
+    HexMapNode.OnRoomNodeSelected -= HandleRoomSelected;
+}
+
+private async void HandleRoomSelected(string nextRoomName)
+{
+    Scene mapScene = SceneManager.GetSceneByName(mapSceneName);
+    if (mapScene.isLoaded)
+    {
+        AsyncOperation unload = SceneManager.UnloadSceneAsync(mapScene);
+        while (unload != null && !unload.isDone)
+            await System.Threading.Tasks.Task.Yield();
+    }
+
+    isMapOpen = false;
+    LoadNextRoom(nextRoomName);
+
+    exitDoor.transform.localPosition = new Vector3(-7.65f, 6f, 0);
+    entranceDoor.transform.localPosition = new Vector3(7.39f, 2.54f, 0);
+}
 
     public async void LoadNextRoom(string sceneName)
     {
@@ -151,23 +181,13 @@ public class OpenCorridorDoor : MonoBehaviour
 
         if (Keyboard.current.eKey.wasPressedThisFrame && distancePlayerDoor <= minDistance)
         {
-
-            // When Pick Room Set variable nextroom
-            if (!RoomRunData.SelectedRoomType.HasValue)
+            if (!isMapOpen && !isLoadingRoom)
             {
-                Debug.LogWarning("No room has been selected on the map!");
-                return;
+                isMapOpen = true;
+                Cursor.lockState = CursorLockMode.None;
+                Cursor.visible = true;
+                SceneManager.LoadSceneAsync(mapSceneName, LoadSceneMode.Additive);
             }
-
-            RoomType chosenType = RoomRunData.SelectedRoomType.Value;
-            LoadNextRoom(chosenType.ToString());
-            
-
-            exitDoor.transform.localPosition =
-                new Vector3(-7.65f, 6f, 0);
-
-            entranceDoor.transform.localPosition =
-                new Vector3(7.39f, 2.54f, 0);
         }
     }
 }
