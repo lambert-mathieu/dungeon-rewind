@@ -10,9 +10,9 @@ namespace DungeonRewind.Rewind
         // [SerializeField]
          private float baseRewindAcceleration = 0.5f;
         // [SerializeField]
-        private float rewindJerk = 2f;
+        private float rewindJerk = 1.8f;
         // [SerializeField]
-         private float maxRewindSpeed = 10.0f;
+         private float maxRewindSpeed = 2.3f;
 
         private IRewindable[] recorders;
         private IRewindSuspendable[] suspendables;
