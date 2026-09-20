@@ -3,16 +3,16 @@ using UnityEngine;
 namespace DungeonRewind.Enemy {
     public sealed class EnemyIlyes : EnemyLogic {
         private const int maxHealth = 50;
-        private const float desiredAttackDistance = 2.4f;
-        private const float attackDistanceTolerance = 1.2f;
+        private const float desiredAttackDistance = 0.0f;
+        private const float attackDistanceTolerance = 3.0f;
         private const float aggroGetDistance = 20.0f;
         private const float aggroLoseDistance = 150.0f;
         private const float minAttackCooldown = 2.0f;
         private const float maxAttackCooldown = 999.0f;
         private const float moveSpeed = 6.0f;
-        private const float attackWindupDuration = 0.3f;
-        private const float meleeHitSpawnDistance = 1.0f;
-        private const float meleeHitSize = 0.5f;
+        private const float attackWindupDuration = 0.6f;
+        private const float meleeDetectionRange = 3.6f;
+        private const int meleeDamage = 10;
 
         protected override int MaxHealth => maxHealth;
         protected override float DesiredAttackDistance => desiredAttackDistance;
@@ -25,13 +25,10 @@ namespace DungeonRewind.Enemy {
         protected override float PrepareAttackDuration => attackWindupDuration;
 
         protected override void PerformAttack() {
-            Vector3 directionToPlayer = (PlayerGlobal.PlayerTransform.position - transform.position).normalized;
-            Vector3 spawnPosition = transform.position + directionToPlayer * meleeHitSpawnDistance;
-
-            GameObject meleeHit = GameObject.CreatePrimitive(PrimitiveType.Cube);
-            meleeHit.name = "MeleeHit";
-            meleeHit.transform.SetPositionAndRotation(spawnPosition, Quaternion.LookRotation(directionToPlayer));
-            meleeHit.transform.localScale = Vector3.one * meleeHitSize;
+            float distanceToPlayer = Vector3.Distance(transform.position, PlayerGlobal.PlayerTransform.position);
+            if (distanceToPlayer <= meleeDetectionRange) {
+                PlayerGlobal.Instance.TakeDamage(meleeDamage, false);
+            }
         }
     }
 }
