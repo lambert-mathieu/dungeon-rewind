@@ -36,7 +36,7 @@ namespace DungeonRewind.Player {
         private const float swayFrequencyDecreaseSpeed = 2.0f;
         private const float airborneHandSwayMultiplier = 0.6f;
         private const float airborneHandSpreadOffset = 0.10f;
-        private const float airborneHandSpreadIncreaseSpeed = 2.0f;
+        private const float airborneHandSpreadIncreaseSpeed = 0.5f;
         private const float airborneHandSpreadDecreaseSpeed = 2.0f;
 
         private const float verticalSwayStiffness = 81.0f;
