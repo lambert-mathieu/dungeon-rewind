@@ -16,6 +16,9 @@ public class HexMapNode : MonoBehaviour, IPointerClickHandler
     public RoomType roomType;
     public Vector2Int gridCoord;
     public bool isSelectable;
+    CameraRefs cameraRefs = null;
+    OpenCorridorDoor door = null;
+
 
     private Color baseColor = Color.white;
 
@@ -95,7 +98,49 @@ public class HexMapNode : MonoBehaviour, IPointerClickHandler
         // 1. Commit chosen tile to persistent data
         RoomRunData.SelectRoom(finalCoord, roomType);
 
-        string nextRoomName = roomType.ToString();
+        string nextRoomName = roomType switch
+        {
+            RoomType.Tutorial => "TutorialRoom",
+            RoomType.Easy => "EnemyRoom",
+            RoomType.Hard => "EnemyRoom2",
+            RoomType.MiniBoss => "EnemyRoom3",
+            RoomType.Boss => "BossRoom",
+            RoomType.Blocked => "",
+            RoomType.Teleport => "TeleportRoom",
+            _ => ""
+        };
+
+        if(cameraRefs != null)
+        {
+            cameraRefs.playerCamera.gameObject.SetActive(true);
+            cameraRefs.armCamera.gameObject.SetActive(true);
+            cameraRefs.graphCamera.gameObject.SetActive(false);
+        }
+        else
+        {
+            Debug.Log("No camera Ref");
+        }
+        Scene corridorScene = SceneManager.GetSceneByName("Corridor");
+
+        if(corridorScene.IsValid())
+        {
+                foreach (GameObject root in corridorScene.GetRootGameObjects())
+                {
+                    if (root.name == "Corridor")
+                    {
+                        door = root.GetComponent<OpenCorridorDoor>();
+                        break;
+                    }
+                }
+        }
+         else
+        {
+            Debug.Log("No Scene Corridor");
+        }
+
+        door.OpenDoor(nextRoomName);
+
+
         Debug.Log($"<color=cyan>[Tile Clicked]</color> Selected: <b>{nextRoomName}</b> at {finalCoord} | Depth: {RoomRunData.ColumnDepth}");
 
         // 2. Refresh visual node states immediately on the grid
@@ -119,4 +164,30 @@ public class HexMapNode : MonoBehaviour, IPointerClickHandler
             OnRoomNodeSelected?.Invoke(nextRoomName);
         }
     }
+        
+void Start()
+    {
+        Scene scene = SceneManager.GetSceneByName("DungeonGenerationScene");
+        if (!scene.isLoaded)
+                {
+                    Debug.LogWarning("PlayerScene is not loaded.");
+                    return;
+                }
+
+
+                foreach (GameObject root in scene.GetRootGameObjects())
+                {
+                    cameraRefs = root.GetComponentInChildren<CameraRefs>(true);
+
+                    if (cameraRefs != null)
+                        break;
+                }
+
+                if (cameraRefs == null)
+                {
+                    Debug.LogWarning("CameraReferences was not found in PlayerScene.");
+                    return;
+                }
+    }
+
 }

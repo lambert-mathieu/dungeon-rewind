@@ -20,6 +20,8 @@ public class HexGridManager : MonoBehaviour
     [SerializeField] private float horizontalSpacing = 1.0f;
     [SerializeField] private float verticalSpacing = 1.0f;
 
+
+
     // Grid tracking
     private Dictionary<Vector2Int, RoomType> generatedTypes = new Dictionary<Vector2Int, RoomType>();
     private Dictionary<Vector2Int, HexMapNode> gridNodes = new Dictionary<Vector2Int, HexMapNode>();
