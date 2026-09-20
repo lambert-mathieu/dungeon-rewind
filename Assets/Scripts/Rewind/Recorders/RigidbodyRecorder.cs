@@ -21,10 +21,17 @@ namespace DungeonRewind.Rewind.Recorders
     [RequireComponent(typeof(Rigidbody))]
     public class RigidbodyRecorder : RewindRecorder<RigidbodySnapshot>, IRewindSuspendable
     {
+        private const float minSweepDistance = 0.0001f;
+        private const float minApproachRate = 0.01f;
+
+        [SerializeField, Min(0.0f)] private float collisionSkin = 0.05f;
+
         private Rigidbody cachedRigidbody;
         private Transform cachedTransform;
         private bool wasKinematic;
         private RigidbodyInterpolation previousInterpolationMode;
+
+        private bool isBlocked;
 
         protected override void Initialize()
         {
@@ -37,16 +44,50 @@ namespace DungeonRewind.Rewind.Recorders
             return new RigidbodySnapshot(cachedTransform.position, cachedTransform.rotation, cachedRigidbody.linearVelocity, cachedRigidbody.angularVelocity);
         }
 
+        protected override void OnRewindBeginInternal()
+        {
+            isBlocked = false;
+        }
+
         protected override void OnRewindEndInternal(RigidbodySnapshot snapshot)
         {
             cachedRigidbody.linearVelocity = snapshot.LinearVelocity;
             cachedRigidbody.angularVelocity = snapshot.AngularVelocity;
         }
 
-
         protected override void Apply(RigidbodySnapshot snapshot)
         {
-            cachedTransform.SetPositionAndRotation(snapshot.Position, snapshot.Rotation);
+            Vector3 resolvedPosition = ResolveBlockedPosition(snapshot.Position);
+
+            cachedRigidbody.position = resolvedPosition;
+            cachedRigidbody.rotation = snapshot.Rotation;
+            cachedTransform.SetPositionAndRotation(resolvedPosition, snapshot.Rotation);
+        }
+
+        private Vector3 ResolveBlockedPosition(Vector3 targetPosition)
+        {
+            Vector3 currentPosition = cachedRigidbody.position;
+            Vector3 delta = targetPosition - currentPosition;
+            float distance = delta.magnitude;
+
+            if (distance <= minSweepDistance)
+            {
+                isBlocked = false;
+                return targetPosition;
+            }
+
+            Vector3 direction = delta / distance;
+            isBlocked = cachedRigidbody.SweepTest(direction, out RaycastHit hit, distance, QueryTriggerInteraction.Ignore);
+
+            if (!isBlocked)
+            {
+                return targetPosition;
+            }
+
+            float approachRate = Mathf.Max(-Vector3.Dot(direction, hit.normal), minApproachRate);
+            float allowedDistance = Mathf.Max(hit.distance - collisionSkin / approachRate, 0.0f);
+
+            return currentPosition + direction * allowedDistance;
         }
 
         protected override RigidbodySnapshot Interpolate(RigidbodySnapshot from, RigidbodySnapshot to, float t)
@@ -73,6 +114,5 @@ namespace DungeonRewind.Rewind.Recorders
             cachedRigidbody.isKinematic = wasKinematic;
             cachedRigidbody.interpolation = previousInterpolationMode;
         }
-
     }
 }
