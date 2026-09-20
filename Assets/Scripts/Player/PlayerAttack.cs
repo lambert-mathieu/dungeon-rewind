@@ -1,3 +1,4 @@
+using DungeonRewind.Enemy;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
@@ -9,9 +10,14 @@ namespace DungeonRewind.Player {
         private const float attackBufferWindowDuration = 0.1f;
         private const float punchAnimationDuration = punchFrameCount * punchFrameDuration;
         private const float totalCooldownDuration = punchAnimationDuration + extraCooldownDuration;
+        private const int hitPunchFrameIndex = 1;
 
         [SerializeField] private Transform leftArm;
         [SerializeField] private Transform rightArm;
+        [SerializeField] private Transform attackRaycastOrigin;
+        [SerializeField] private float attackRange = 2.5f;
+        [SerializeField] private int attackDamage = 10;
+        [SerializeField] private LayerMask attackHittableLayers = 1;
 
         private GameObject leftArmDefault;
         private GameObject rightArmDefault;
@@ -122,6 +128,21 @@ namespace DungeonRewind.Player {
             GetPunchStages(isAttackingRightArm)[currentPunchFrameIndex].SetActive(false);
             currentPunchFrameIndex = targetFrameIndex;
             GetPunchStages(isAttackingRightArm)[currentPunchFrameIndex].SetActive(true);
+
+            if (currentPunchFrameIndex == hitPunchFrameIndex) {
+                TryDealDamage();
+            }
+        }
+
+        private void TryDealDamage() {
+            if (attackRaycastOrigin == null) {
+                return;
+            }
+
+            if (Physics.Raycast(attackRaycastOrigin.position, attackRaycastOrigin.forward, out RaycastHit hit, attackRange, attackHittableLayers)
+                && hit.collider.TryGetComponent(out EnemyHealth enemyHealth)) {
+                enemyHealth.TakeDamage(attackDamage);
+            }
         }
 
         private void ResetArmsToDefaultPose() {

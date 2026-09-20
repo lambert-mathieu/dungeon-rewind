@@ -450,6 +450,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::DungeonRewind.Player.PlayerAttack
   leftArm: {fileID: 5570765918143060580}
   rightArm: {fileID: 8330172644030534678}
+  attackRaycastOrigin: {fileID: 5030144317725138274}
 --- !u!54 &3198262562445274400
 Rigidbody:
   m_ObjectHideFlags: 0
